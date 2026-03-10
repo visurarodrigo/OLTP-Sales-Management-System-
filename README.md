@@ -1,0 +1,380 @@
+# OLTP Sales Management System
+
+A **Spring Boot** application demonstrating an **Online Transaction Processing (OLTP)** database system for sales management, optimized for high-frequency transactional operations including real-time sales processing, inventory management, customer tracking, and location-based operations.
+
+## Quick Start
+
+### Prerequisites
+- **Java 8 or higher** (JDK 8, 11, 17, or 21)
+- **Maven 3.6+** installed and configured
+- **Port 8080** available
+
+### Running the Application
+
+**Windows:**
+```cmd
+.\run-app.bat
+```
+
+**Linux/Mac or Manual:**
+```bash
+mvn spring-boot:run
+```
+
+**Access Points:**
+- **Home Page:** http://localhost:8080
+- **H2 Console:** http://localhost:8080/h2-console
+  - JDBC URL: `jdbc:h2:mem:oltp_sales_db`
+  - Username: `sa`
+  - Password: _(leave blank)_
+
+### Stopping the Application
+Press `Ctrl+C` in the terminal
+
+## Database Schema
+
+### Tables and OLTP-Optimized Attributes
+
+#### 1. **Customer Table**
+Stores customer information with attributes optimized for quick lookups and transactional processing.
+
+**Attributes:**
+- `customer_id` (PK) - Auto-incrementing primary key for fast indexing
+- `first_name`, `last_name` - Customer name
+- `email` - Unique identifier, indexed for quick searches
+- `phone` - Indexed for contact lookups
+- `date_of_birth` - Customer demographics
+- `address`, `city`, `state`, `country`, `postal_code` - Location details
+- `customer_status` - ACTIVE, INACTIVE, SUSPENDED (for business logic)
+- `created_at`, `updated_at` - Audit timestamps
+
+**OLTP Features:**
+- Indexed email and phone for fast customer lookup during checkout
+- Status field enables quick filtering of active customers
+- Normalized structure reduces redundancy
+- Timestamps for audit trail
+
+#### 2. **Product Table**
+Manages product catalog with real-time inventory tracking.
+
+**Attributes:**
+- `product_id` (PK) - Primary key
+- `sku` - Stock Keeping Unit, unique identifier indexed
+- `product_name`, `description` - Product details
+- `category`, `sub_category` - Indexed for filtering
+- `price`, `cost_price` - Pricing information
+- `stock_quantity` - Real-time inventory count
+- `reorder_level` - Threshold for restocking alerts
+- `product_status` - AVAILABLE, OUT_OF_STOCK, DISCONTINUED
+- `brand`, `weight` - Additional product attributes
+- `created_at`, `updated_at` - Audit timestamps
+
+**OLTP Features:**
+- SKU indexed for quick product lookups at POS
+- Real-time stock tracking for inventory management
+- Category indexing enables fast product filtering
+- Reorder level supports automated inventory alerts
+
+#### 3. **Location Table**
+Tracks physical stores, warehouses, and online channels.
+
+**Attributes:**
+- `location_id` (PK) - Primary key
+- `store_code` - Unique store identifier, indexed
+- `store_name` - Location name
+- `location_type` - RETAIL, WAREHOUSE, OUTLET, ONLINE
+- `address`, `city`, `state`, `country`, `postal_code` - Geographic data
+- `phone`, `email` - Contact information
+- `manager_name` - Store manager
+- `opening_time`, `closing_time` - Operating hours
+- `store_capacity` - Physical capacity or square footage
+- `location_status` - ACTIVE, INACTIVE, UNDER_RENOVATION
+- `created_at`, `updated_at` - Audit timestamps
+
+**OLTP Features:**
+- Store code indexing for fast location lookups
+- Location type enables channel-based reporting
+- Status field for operational filtering
+- Geographic indexing for regional queries
+
+#### 4. **Sales Table**
+Records individual sales transactions with complete transaction details.
+
+**Attributes:**
+- `sale_id` (PK) - Primary key
+- `order_number` - Unique order identifier
+- `customer_id` (FK) - References Customer table
+- `product_id` (FK) - References Product table
+- `location_id` (FK) - References Location table
+- `quantity` - Items purchased
+- `unit_price`, `subtotal` - Pricing breakdown
+- `discount_amount`, `tax_amount` - Financial calculations
+- `total_amount` - Final transaction amount
+- `payment_method` - CASH, CREDIT_CARD, DEBIT_CARD, DIGITAL_WALLET
+- `payment_status` - PAID, PENDING, REFUNDED, FAILED
+- `order_status` - COMPLETED, PROCESSING, CANCELLED, RETURNED
+- `sale_date` - Transaction timestamp, heavily indexed
+- `delivery_date` - Fulfillment date
+- `notes` - Additional transaction notes
+- `created_at`, `updated_at` - Audit timestamps
+
+**OLTP Features:**
+- Multiple indexes (date, customer, product, location) for fast queries
+- Foreign key constraints ensure referential integrity
+- Status fields enable workflow management
+- Sale date indexing optimizes time-based reporting
+- Transaction-level detail supports financial reconciliation
+
+## OLTP Design Principles Applied
+
+### 1. **Normalization**
+- Tables are normalized to 3NF to reduce data redundancy
+- Foreign key relationships maintain data integrity
+- No duplicate customer or product information
+
+### 2. **Indexing Strategy**
+- Primary keys on all ID columns
+- Secondary indexes on frequently queried columns (email, SKU, store_code, sale_date)
+- Composite indexes where needed for multi-column queries
+- Index on status fields for filtering
+
+### 3. **Data Integrity**
+- Foreign key constraints enforce referential integrity
+- Unique constraints on business keys (email, SKU, store_code, order_number)
+- NOT NULL constraints on critical fields
+- Cascade rules for related data management
+
+### 4. **Audit Trail**
+- `created_at` and `updated_at` timestamps on all tables
+- Automatic timestamp management via JPA annotations
+- Historical tracking capability
+
+### 5. **Transaction Support**
+- JPA/Hibernate provides ACID transaction support
+- Service layer methods are transactional
+- Stock updates are atomic with sales creation
+
+### 6. **Real-time Operations**
+- Immediate stock quantity updates
+- Real-time customer and order status changes
+- Current inventory visibility
+
+## Technology Stack
+
+- **Java 8** (Compatible with Java 8, 11, 17, 21)
+- **Spring Boot 2.7.18**
+- **Spring Data JPA** - Data access layer
+- **Hibernate** - ORM framework
+- **H2 Database** - In-memory database (easily switchable to MySQL/PostgreSQL)
+- **Lombok** - Reduces boilerplate code
+- **Maven** - Build and dependency management
+
+## Project Structure
+
+```
+oltp-sales-system/
+├── src/
+│   └── main/
+│       ├── java/com/oltp/
+│       │   ├── SalesSystemApplication.java    # Main application entry point
+│       │   ├── config/
+│       │   │   └── DataLoader.java            # Sample data initialization
+│       │   ├── controller/
+│       │   │   ├── HomeController.java        # Welcome page
+│       │   │   ├── CustomerController.java    # Customer REST API
+│       │   │   ├── ProductController.java     # Product REST API
+│       │   │   ├── LocationController.java    # Location REST API
+│       │   │   └── SalesController.java       # Sales REST API
+│       │   ├── entity/
+│       │   │   ├── Customer.java              # Customer entity
+│       │   │   ├── Product.java               # Product entity
+│       │   │   ├── Location.java              # Location entity
+│       │   │   └── Sales.java                 # Sales entity
+│       │   ├── repository/
+│       │   │   ├── CustomerRepository.java    # Customer data access
+│       │   │   ├── ProductRepository.java     # Product data access
+│       │   │   ├── LocationRepository.java    # Location data access
+│       │   │   └── SalesRepository.java       # Sales data access
+│       │   └── service/
+│       │       ├── CustomerService.java       # Customer business logic
+│       │       ├── ProductService.java        # Product business logic
+│       │       ├── LocationService.java       # Location business logic
+│       │       └── SalesService.java          # Sales business logic
+│       └── resources/
+│           └── application.properties         # Application configuration
+├── pom.xml                                    # Maven dependencies
+├── run-app.bat                                # Windows startup script
+├── .gitignore                                 # Git ignore rules
+├── README.md                                  # This file
+└── OLTP_DESIGN.md                             # Detailed design documentation
+```
+
+## Setup Instructions
+
+### 1. Install Java
+Download and install JDK 8 or higher from:
+- [Oracle JDK](https://www.oracle.com/java/technologies/downloads/)
+- [OpenJDK](https://adoptium.net/)
+
+Verify installation:
+```bash
+java -version
+```
+
+### 2. Install Maven
+
+**Windows (Using Chocolatey):**
+```powershell
+choco install maven -y
+```
+
+**Manual Installation:**
+1. Download from [Apache Maven](https://maven.apache.org/download.cgi)
+2. Extract to `C:\Program Files\Apache\maven`
+3. Add `MAVEN_HOME` and update `PATH` environment variables
+
+**Verify installation:**
+```bash
+mvn --version
+```
+
+### 3. Configure Java Home (if needed)
+
+**Windows:**
+```cmd
+set JAVA_HOME=C:\Program Files\Java\jdk1.8.0_202
+```
+
+### 4. Build and Run
+
+Clone/download the project, then:
+```bash
+cd oltp-sales-system
+mvn clean install
+mvn spring-boot:run
+```
+
+Or simply run:
+```cmd
+.\run-app.bat
+```
+
+## Sample Data
+
+The application automatically loads sample data on startup:
+- **10 Customers** across different US locations
+- **12 Products** (Electronics, Clothing, Home Goods, Sports, Books, Beauty)
+- **6 Locations** (Retail stores in NY, LA, Chicago + Online channel)
+- **30 Sales Transactions** with various statuses
+
+## REST API Endpoints
+
+### Customers
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/customers` | Get all customers |
+| GET | `/api/customers/{id}` | Get customer by ID |
+| POST | `/api/customers` | Create new customer |
+| PUT | `/api/customers/{id}` | Update customer |
+| DELETE | `/api/customers/{id}` | Delete customer |
+
+### Products
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/products` | Get all products |
+| GET | `/api/products/{id}` | Get product by ID |
+| POST | `/api/products` | Create new product |
+| PUT | `/api/products/{id}` | Update product |
+| PUT | `/api/products/{id}/stock?quantity=X` | Update stock quantity |
+| DELETE | `/api/products/{id}` | Delete product |
+
+### Locations
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/locations` | Get all locations |
+| GET | `/api/locations/{id}` | Get location by ID |
+| POST | `/api/locations` | Create new location |
+| PUT | `/api/locations/{id}` | Update location |
+| DELETE | `/api/locations/{id}` | Delete location |
+
+### Sales
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/sales` | Get all sales |
+| GET | `/api/sales/{id}` | Get sale by ID |
+| POST | `/api/sales` | Create new sale |
+| PUT | `/api/sales/{id}` | Update sale |
+| DELETE | `/api/sales/{id}` | Delete sale |
+
+### Example API Usage
+
+**Get all customers:**
+```bash
+curl http://localhost:8080/api/customers
+```
+
+**Create a new customer:**
+```bash
+curl -X POST http://localhost:8080/api/customers \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "555-1234",
+    "customerStatus": "ACTIVE"
+  }'
+```
+| `GET /api/customers/email/{email}` | Customer by email |
+| `GET /api/products` | All products |
+| `GET /api/products/sku/{sku}` | Product by SKU |
+| `GET /api/products/category/{category}` | Products by category |
+| `GET /api/products/reorder` | Products needing restock |
+| `GET /api/locations` | All locations |
+| `GET /api/locations/active` | Active locations |
+| `GET /api/sales` | All sales |
+| `GET /api/sales/customer/{id}` | Sales by customer |
+| `POST /api/*` | Create new record |
+
+## Example API Usage
+
+```bash
+# Get all customers
+curl http://localhost:8080/api/customers
+
+# Get products needing reorder
+curl http://localhost:8080/api/products/reorder
+```
+
+## Switching to MySQL/PostgreSQL
+
+Update `application.properties`:
+
+**MySQL:**
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/oltp_sales_db
+spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
+```
+
+**PostgreSQL:**
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/oltp_sales_db
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+```
+
+Add respective database driver to `pom.xml`.
+
+## OLTP Features
+
+- ✅ **Normalized to 3NF** - Eliminates data redundancy
+- ✅ **Strategic Indexing** - Fast lookups on email, SKU, dates, status
+- ✅ **Foreign Key Constraints** - Referential integrity
+- ✅ **ACID Transactions** - Guaranteed consistency
+- ✅ **Audit Timestamps** - created_at/updated_at on all tables
+- ✅ **Real-time Processing** - Immediate stock updates
+
+See [OLTP_DESIGN.md](OLTP_DESIGN.md) for detailed design documentation.
+
+---
+
+**License:** Educational purposes
