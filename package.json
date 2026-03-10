@@ -1,0 +1,21 @@
+{
+  "name": "oltp-system",
+  "version": "1.0.0",
+  "description": "A **Spring Boot** application demonstrating an **Online Transaction Processing (OLTP)** database system for sales management, optimized for high-frequency transactional operations including real-time sales processing, inventory management, customer tracking, and location-based operations.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/visurarodrigo/OLTP-Sales-Management-System-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/visurarodrigo/OLTP-Sales-Management-System-/issues"
+  },
+  "homepage": "https://github.com/visurarodrigo/OLTP-Sales-Management-System-#readme"
+}
