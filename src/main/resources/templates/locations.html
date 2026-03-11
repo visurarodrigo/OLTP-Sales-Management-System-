@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locations - OLTP Sales System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2em;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary, .btn-secondary {
+            color: white;
+        }
+        
+        .btn-primary:hover, .btn-secondary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .location-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .location-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .location-name {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .location-details {
+            color: #666;
+            line-height: 1.8;
+        }
+        
+        .location-detail {
+            margin: 8px 0;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📍 Store Locations</h1>
+            <a href="/" class="btn btn-secondary">← Back to Dashboard</a>
+        </div>
+        
+        <div class="content">
+            <div th:if="${locations.isEmpty()}" class="empty-state">
+                <div class="empty-state-icon">📍</div>
+                <h2>No Locations Found</h2>
+                <p>No store locations have been added to the system yet.</p>
+            </div>
+            
+            <div th:if="${!locations.isEmpty()}" class="locations-grid">
+                <div class="location-card" th:each="location : ${locations}">
+                    <div class="location-name" th:text="${location.storeName}">Location Name</div>
+                    <div class="location-details">
+                        <div class="location-detail">
+                            <strong>🏙️ City:</strong> <span th:text="${location.city}">City</span>
+                        </div>
+                        <div class="location-detail">
+                            <strong>🌎 State:</strong> <span th:text="${location.state}">State</span>
+                        </div>
+                        <div class="location-detail">
+                            <strong>🌍 Country:</strong> <span th:text="${location.country}">Country</span>
+                        </div>
+                        <div class="location-detail">
+                            <strong>📮 Zip Code:</strong> <span th:text="${location.postalCode}">00000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

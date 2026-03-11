@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -40,16 +41,19 @@ public class Sales {
     @Column(name = "order_number", nullable = false, unique = true, length = 50)
     private String orderNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id", nullable = false, foreignKey = @ForeignKey(name = "fk_sales_customer"))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Customer customer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(name = "fk_sales_product"))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Product product;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "location_id", nullable = false, foreignKey = @ForeignKey(name = "fk_sales_location"))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Location location;
 
     @Column(name = "quantity", nullable = false)

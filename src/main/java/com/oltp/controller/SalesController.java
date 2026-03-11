@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/sales")
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SalesController {
 
     private final SalesService salesService;

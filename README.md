@@ -2,6 +2,23 @@
 
 A **Spring Boot** application demonstrating an **Online Transaction Processing (OLTP)** database system for sales management, optimized for high-frequency transactional operations including real-time sales processing, inventory management, customer tracking, and location-based operations.
 
+## Features
+
+### 🎨 Web User Interface
+- **Dashboard** - Real-time statistics and quick navigation
+- **Product Management** - Full CRUD operations with search functionality
+- **Customer Management** - Add, edit, delete customers with search
+- **Location Viewer** - Display store locations in card layout
+- **Sales Transactions** - View all sales with revenue calculation
+- **Auto-SKU Generation** - Automatically generates SKU codes for products
+- **Responsive Design** - Modern gradient UI with smooth animations
+
+### 🔌 REST API
+- Complete RESTful API for all entities
+- JSON-based data exchange
+- Support for CRUD operations
+- Transaction management
+
 ## Quick Start
 
 ### Prerequisites
@@ -22,11 +39,16 @@ mvn spring-boot:run
 ```
 
 **Access Points:**
-- **Home Page:** http://localhost:8080
-- **H2 Console:** http://localhost:8080/h2-console
+- **Dashboard:** http://localhost:8080 (Main web interface)
+- **Products:** http://localhost:8080/products (Product management)
+- **Customers:** http://localhost:8080/customers (Customer management)
+- **Locations:** http://localhost:8080/locations (Store locations)
+- **Sales:** http://localhost:8080/sales (Sales transactions)
+- **H2 Console:** http://localhost:8080/h2-console (Database viewer)
   - JDBC URL: `jdbc:h2:mem:oltp_sales_db`
   - Username: `sa`
   - Password: _(leave blank)_
+- **REST API Base:** http://localhost:8080/api/
 
 ### Stopping the Application
 Press `Ctrl+C` in the terminal
@@ -164,9 +186,12 @@ Records individual sales transactions with complete transaction details.
 - **Java 8** (Compatible with Java 8, 11, 17, 21)
 - **Spring Boot 2.7.18**
 - **Spring Data JPA** - Data access layer
+- **Spring Web MVC** - Web layer and REST API
+- **Thymeleaf** - Server-side template engine for web UI
 - **Hibernate** - ORM framework
 - **H2 Database** - In-memory database (easily switchable to MySQL/PostgreSQL)
 - **Lombok** - Reduces boilerplate code
+- **Jackson** - JSON serialization
 - **Maven** - Build and dependency management
 
 ## Project Structure
@@ -180,7 +205,11 @@ oltp-sales-system/
 │       │   ├── config/
 │       │   │   └── DataLoader.java            # Sample data initialization
 │       │   ├── controller/
-│       │   │   ├── HomeController.java        # Welcome page
+│       │   │   ├── HomeController.java        # Dashboard web page
+│       │   │   ├── WebProductController.java  # Product web UI controller
+│       │   │   ├── WebCustomerController.java # Customer web UI controller
+│       │   │   ├── WebLocationController.java # Location web UI controller
+│       │   │   ├── WebSalesController.java    # Sales web UI controller
 │       │   │   ├── CustomerController.java    # Customer REST API
 │       │   │   ├── ProductController.java     # Product REST API
 │       │   │   ├── LocationController.java    # Location REST API
@@ -198,6 +227,26 @@ oltp-sales-system/
 │       │   └── service/
 │       │       ├── CustomerService.java       # Customer business logic
 │       │       ├── ProductService.java        # Product business logic
+│       │       ├── LocationService.java       # Location business logic
+│       │       └── SalesService.java          # Sales business logic
+│       └── resources/
+│           ├── templates/                     # Thymeleaf HTML templates
+│           │   ├── index.html                 # Dashboard page
+│           │   ├── products.html              # Product list page
+│           │   ├── product-form.html          # Add/Edit product form
+│           │   ├── product-details.html       # Product details page
+│           │   ├── customers.html             # Customer list page
+│           │   ├── customer-form.html         # Add/Edit customer form
+│           │   ├── locations.html             # Locations display page
+│           │   └── sales.html                 # Sales transactions page
+│           └── application.properties         # Application configuration
+├── pom.xml                                    # Maven dependencies
+├── run-app.bat                                # Windows startup script
+├── .gitignore                                 # Git ignore rules
+├── README.md                                  # This file
+├── OLTP_DESIGN.md                             # Detailed design documentation
+└── ER_DIAGRAM.md                              # Entity relationship diagram
+```
 │       │       ├── LocationService.java       # Location business logic
 │       │       └── SalesService.java          # Sales business logic
 │       └── resources/
@@ -266,6 +315,51 @@ The application automatically loads sample data on startup:
 - **12 Products** (Electronics, Clothing, Home Goods, Sports, Books, Beauty)
 - **6 Locations** (Retail stores in NY, LA, Chicago + Online channel)
 - **30 Sales Transactions** with various statuses
+
+## Web User Interface
+
+The application provides a modern, user-friendly web interface built with Thymeleaf templates and styled with CSS gradients.
+
+### Dashboard (/)
+- **Statistics Cards**: Display total products, customers, sales, and locations
+- **Quick Navigation**: Cards linking to each management section
+- **Modern Design**: Purple gradient background with smooth animations
+
+### Product Management (/products)
+- **Product List**: View all products in a table format
+- **Search Functionality**: Real-time search by product name or SKU
+- **Add New Product**: Form with auto-SKU generation
+- **Edit Product**: Update existing product details
+- **Delete Product**: Remove products with confirmation
+- **Product Details**: View individual product information
+- **Stock Indicators**: Visual badges for low stock warnings
+
+### Customer Management (/customers)
+- **Customer List**: View all customers in a table
+- **Search by Name/Email**: Real-time search functionality
+- **Add New Customer**: Create customer with all details
+- **Edit Customer**: Update customer information
+- **Delete Customer**: Remove customers with confirmation
+
+### Location Viewer (/locations)
+- **Card Layout**: Display stores in visually appealing cards
+- **Location Details**: Store name, city, state, country, postal code
+- **Clean Design**: Easy to scan location information
+
+### Sales Transactions (/sales)
+- **Transaction Table**: View all sales with full details
+- **Summary Cards**: Total transactions and revenue
+- **Revenue Calculation**: Automatic total revenue display
+- **Transaction Details**: Customer, product, quantity, price, location
+
+### Features
+- ✅ **Responsive Design**: Works on desktop and mobile
+- ✅ **Modern UI**: Gradient backgrounds and smooth transitions
+- ✅ **Real-time Search**: Instant filtering on products and customers
+- ✅ **Form Validation**: Required field validation
+- ✅ **Auto-SKU Generation**: Automatically creates SKU codes
+- ✅ **Stock Status Badges**: Visual indicators for inventory levels
+- ✅ **Confirmation Dialogs**: Prevents accidental deletions
 
 ## REST API Endpoints
 

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales - OLTP Sales System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2em;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: white;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+        }
+        
+        .summary-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .summary-card .label {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Sales Transactions</h1>
+            <a href="/" class="btn btn-secondary">← Back to Dashboard</a>
+        </div>
+        
+        <div class="content">
+            <div class="summary-cards" th:if="${!sales.isEmpty()}">
+                <div class="summary-card">
+                    <div class="number" th:text="${sales.size()}">0</div>
+                    <div class="label">Total Transactions</div>
+                </div>
+                <div class="summary-card">
+                    <div class="number" th:text="'$' + ${#numbers.formatDecimal(totalRevenue, 1, 2)}">$0.00</div>
+                    <div class="label">Total Revenue</div>
+                </div>
+            </div>
+            
+            <div th:if="${sales.isEmpty()}" class="empty-state">
+                <div class="empty-state-icon">💰</div>
+                <h2>No Sales Yet</h2>
+                <p>No sales transactions have been recorded in the system.</p>
+            </div>
+            
+            <table th:if="${!sales.isEmpty()}">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="sale : ${sales}">
+                        <td th:text="${sale.saleId}">1</td>
+                        <td th:text="${#temporals.format(sale.saleDate, 'yyyy-MM-dd HH:mm')}">2024-01-01</td>
+                        <td th:text="${sale.customer.firstName} + ' ' + ${sale.customer.lastName}">Customer Name</td>
+                        <td th:text="${sale.product.productName}">Product Name</td>
+                        <td th:text="${sale.quantity}">1</td>
+                        <td th:text="'$' + ${#numbers.formatDecimal(sale.unitPrice, 1, 2)}">$0.00</td>
+                        <td th:text="'$' + ${#numbers.formatDecimal(sale.totalAmount, 1, 2)}">$0.00</td>
+                        <td th:text="${sale.location.city + ', ' + sale.location.state}">Location</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

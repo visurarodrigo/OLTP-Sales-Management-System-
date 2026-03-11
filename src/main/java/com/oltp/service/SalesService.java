@@ -16,12 +16,13 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class SalesService {
 
     private final SalesRepository salesRepository;
     private final ProductService productService;
 
+    @Transactional
     public Sales createSale(Sales sale) {
         // Calculate amounts
         BigDecimal subtotal = sale.getUnitPrice().multiply(new BigDecimal(sale.getQuantity()));
