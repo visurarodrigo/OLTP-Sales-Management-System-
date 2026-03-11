@@ -247,17 +247,6 @@ oltp-sales-system/
 ├── OLTP_DESIGN.md                             # Detailed design documentation
 └── ER_DIAGRAM.md                              # Entity relationship diagram
 ```
-│       │       ├── LocationService.java       # Location business logic
-│       │       └── SalesService.java          # Sales business logic
-│       └── resources/
-│           └── application.properties         # Application configuration
-├── pom.xml                                    # Maven dependencies
-├── run-app.bat                                # Windows startup script
-├── .gitignore                                 # Git ignore rules
-├── README.md                                  # This file
-└── OLTP_DESIGN.md                             # Detailed design documentation
-```
-
 ## Setup Instructions
 
 ### 1. Install Java
