@@ -24,11 +24,21 @@ public interface SalesRepository extends JpaRepository<Sales, Long> {
     
     List<Sales> findBySaleDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 
-        List<Sales> findByProduct_ProductIdAndLocation_LocationIdAndSaleDateBetween(
+    List<Sales> findByProduct_ProductIdAndLocation_LocationIdAndSaleDateBetween(
             Long productId,
             Long locationId,
             LocalDateTime startDate,
             LocalDateTime endDate);
+
+    @Query("SELECT COALESCE(SUM(s.quantity), 0), COALESCE(SUM(s.totalAmount), 0), COUNT(s) " +
+            "FROM Sales s " +
+            "WHERE s.product.productId = :productId " +
+            "AND s.location.locationId = :locationId " +
+            "AND s.saleDate BETWEEN :startDate AND :endDate")
+    Object[] aggregateByProductLocationAndDateRange(@Param("productId") Long productId,
+                                                     @Param("locationId") Long locationId,
+                                                     @Param("startDate") LocalDateTime startDate,
+                                                     @Param("endDate") LocalDateTime endDate);
     
     List<Sales> findByOrderStatus(String orderStatus);
     

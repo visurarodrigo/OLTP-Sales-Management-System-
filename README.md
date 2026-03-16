@@ -392,6 +392,12 @@ The application provides a modern, user-friendly web interface built with Thymel
 | PUT | `/api/sales/{id}` | Update sale |
 | DELETE | `/api/sales/{id}` | Delete sale |
 
+### Benchmark and Phase 2 (Dimensional Model)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/benchmark/warehouse/rebuild` | Rebuilds dimension and fact tables from OLTP data |
+| GET | `/api/benchmark/sales-compare?productId=...&locationId=...&startDate=...&endDate=...&runs=20` | Compares query performance of OLTP vs dimensional model |
+
 ### Example API Usage
 
 **Get all customers:**
@@ -462,6 +468,28 @@ Add respective database driver to `pom.xml`.
 - ✅ **Real-time Processing** - Immediate stock updates
 
 See [OLTP_DESIGN.md](OLTP_DESIGN.md) for detailed design documentation.
+
+## Phase 2: Dimensional Model (Fact + Dimensions)
+
+This project now includes a simple star schema for analytics:
+- `dim_product`
+- `dim_location`
+- `dim_date`
+- `fact_sales`
+
+These are populated automatically from OLTP tables at startup.
+
+Use this API to compare query performance between models:
+
+```bash
+curl "http://localhost:8080/api/benchmark/sales-compare?productId=1&locationId=1&startDate=2026-03-01T00:00:00&endDate=2026-03-31T23:59:59&runs=30"
+```
+
+Response includes:
+- aggregated result (quantity, revenue, transaction count)
+- average execution time for OLTP query
+- average execution time for dimensional query
+- dimensional improvement percentage
 
 ---
 

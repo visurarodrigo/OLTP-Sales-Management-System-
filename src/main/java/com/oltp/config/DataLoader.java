@@ -8,6 +8,7 @@ import com.oltp.service.CustomerService;
 import com.oltp.service.LocationService;
 import com.oltp.service.ProductService;
 import com.oltp.service.SalesService;
+import com.oltp.service.WarehouseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -37,6 +38,7 @@ public class DataLoader implements CommandLineRunner {
     private final ProductService productService;
     private final LocationService locationService;
     private final SalesService salesService;
+    private final WarehouseService warehouseService;
     private final Random random = new Random();
 
     @Override
@@ -58,6 +60,9 @@ public class DataLoader implements CommandLineRunner {
         // Load Sales
         List<Sales> sales = loadSales(customers, products, locations);
         log.info("Loaded {} sales transactions", sales.size());
+
+        warehouseService.rebuildWarehouse();
+        log.info("Built dimensional model (fact + dimensions) from OLTP sales");
 
         log.info("Data loading completed successfully!");
     }
