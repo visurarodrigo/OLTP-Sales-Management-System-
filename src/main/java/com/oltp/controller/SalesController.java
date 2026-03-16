@@ -1,5 +1,6 @@
 package com.oltp.controller;
 
+import com.oltp.dto.ProductLocationSalesAnalytics;
 import com.oltp.entity.Sales;
 import com.oltp.service.SalesService;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,28 @@ public class SalesController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         return ResponseEntity.ok(salesService.getSalesByDateRange(startDate, endDate));
+    }
+
+    @GetMapping("/product-location")
+    public ResponseEntity<List<Sales>> getSalesByProductLocationAndDateRange(
+            @RequestParam Long productId,
+            @RequestParam Long locationId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+        return ResponseEntity.ok(
+                salesService.getSalesByProductLocationAndDateRange(productId, locationId, startDate, endDate)
+        );
+    }
+
+    @GetMapping("/analytics/product-location")
+    public ResponseEntity<ProductLocationSalesAnalytics> getProductLocationAnalytics(
+            @RequestParam Long productId,
+            @RequestParam Long locationId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+        return ResponseEntity.ok(
+                salesService.getProductLocationAnalytics(productId, locationId, startDate, endDate)
+        );
     }
 
     @GetMapping("/revenue")

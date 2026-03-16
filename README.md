@@ -300,10 +300,10 @@ Or simply run:
 ## Sample Data
 
 The application automatically loads sample data on startup:
-- **10 Customers** across different US locations
-- **12 Products** (Electronics, Clothing, Home Goods, Sports, Books, Beauty)
-- **6 Locations** (Retail stores in NY, LA, Chicago + Online channel)
-- **30 Sales Transactions** with various statuses
+- **100 Customers** across different US locations
+- **100 Products** across multiple categories
+- **100 Locations** (retail, outlet, warehouse, and online)
+- **100 Sales Transactions** with various statuses
 
 ## Web User Interface
 
@@ -385,6 +385,9 @@ The application provides a modern, user-friendly web interface built with Thymel
 |--------|----------|-------------|
 | GET | `/api/sales` | Get all sales |
 | GET | `/api/sales/{id}` | Get sale by ID |
+| GET | `/api/sales/date-range?startDate=...&endDate=...` | Get sales by date range |
+| GET | `/api/sales/product-location?productId=...&locationId=...&startDate=...&endDate=...` | Get sales for a product in a location over a period |
+| GET | `/api/sales/analytics/product-location?productId=...&locationId=...&startDate=...&endDate=...` | Get analytics (totals + maximum sales stats) for that filter |
 | POST | `/api/sales` | Create new sale |
 | PUT | `/api/sales/{id}` | Update sale |
 | DELETE | `/api/sales/{id}` | Delete sale |
@@ -417,6 +420,8 @@ curl -X POST http://localhost:8080/api/customers \
 | `GET /api/locations/active` | Active locations |
 | `GET /api/sales` | All sales |
 | `GET /api/sales/customer/{id}` | Sales by customer |
+| `GET /api/sales/product-location?...` | Sales by product + location + date range |
+| `GET /api/sales/analytics/product-location?...` | Max/total sales analytics for product + location + date range |
 | `POST /api/*` | Create new record |
 
 ## Example API Usage

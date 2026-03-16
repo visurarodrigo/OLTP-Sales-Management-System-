@@ -70,6 +70,83 @@
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
+
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid #e9ecef;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 0.95em;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .section-title {
+            color: #495057;
+            margin: 10px 0 15px;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .mode-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+        }
+
+        .btn-warning {
+            background: #f0ad4e;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .ranking-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .ranking-card h3 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
         
         .summary-cards {
             display: grid;
@@ -138,6 +215,105 @@
         </div>
         
         <div class="content">
+            <div class="filter-section">
+                <form method="get" th:action="@{/sales}">
+                    <div class="filter-grid">
+                        <div class="filter-group">
+                            <label for="productId">Product</label>
+                            <select id="productId" name="productId">
+                                <option value="">Select Product</option>
+                                <option th:each="product : ${products}"
+                                        th:value="${product.productId}"
+                                        th:text="${product.productName}"
+                                        th:selected="${selectedProductId != null and selectedProductId == product.productId}">
+                                    Product
+                                </option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="locationId">Location</label>
+                            <select id="locationId" name="locationId">
+                                <option value="">Select Location</option>
+                                <option th:each="location : ${locations}"
+                                        th:value="${location.locationId}"
+                                        th:text="${location.storeName + ' (' + location.city + ', ' + location.state + ')'}"
+                                        th:selected="${selectedLocationId != null and selectedLocationId == location.locationId}">
+                                    Location
+                                </option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="paymentMethod">Payment Method</label>
+                            <select id="paymentMethod" name="paymentMethod">
+                                <option value="">All Payment Methods</option>
+                                <option value="CASH" th:selected="${selectedPaymentMethod == 'CASH'}">CASH</option>
+                                <option value="CREDIT_CARD" th:selected="${selectedPaymentMethod == 'CREDIT_CARD'}">CREDIT_CARD</option>
+                                <option value="DEBIT_CARD" th:selected="${selectedPaymentMethod == 'DEBIT_CARD'}">DEBIT_CARD</option>
+                                <option value="DIGITAL_WALLET" th:selected="${selectedPaymentMethod == 'DIGITAL_WALLET'}">DIGITAL_WALLET</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="orderStatus">Order Status</label>
+                            <select id="orderStatus" name="orderStatus">
+                                <option value="">All Order Statuses</option>
+                                <option value="COMPLETED" th:selected="${selectedOrderStatus == 'COMPLETED'}">COMPLETED</option>
+                                <option value="PROCESSING" th:selected="${selectedOrderStatus == 'PROCESSING'}">PROCESSING</option>
+                                <option value="CANCELLED" th:selected="${selectedOrderStatus == 'CANCELLED'}">CANCELLED</option>
+                                <option value="RETURNED" th:selected="${selectedOrderStatus == 'RETURNED'}">RETURNED</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="period">Quick Period</label>
+                            <select id="period" name="period">
+                                <option value="CUSTOM" th:selected="${selectedPeriod == 'CUSTOM'}">CUSTOM</option>
+                                <option value="TODAY" th:selected="${selectedPeriod == 'TODAY'}">TODAY</option>
+                                <option value="LAST_7_DAYS" th:selected="${selectedPeriod == 'LAST_7_DAYS'}">LAST 7 DAYS</option>
+                                <option value="LAST_30_DAYS" th:selected="${selectedPeriod == 'LAST_30_DAYS'}">LAST 30 DAYS</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="minQuantity">Min Quantity</label>
+                            <input id="minQuantity" name="minQuantity" type="number" min="1"
+                                   th:value="${selectedMinQuantity != null ? selectedMinQuantity : ''}">
+                        </div>
+                        <div class="filter-group">
+                            <label for="maxQuantity">Max Quantity</label>
+                            <input id="maxQuantity" name="maxQuantity" type="number" min="1"
+                                   th:value="${selectedMaxQuantity != null ? selectedMaxQuantity : ''}">
+                        </div>
+                        <div class="filter-group">
+                            <label for="startDate">Start Date &amp; Time</label>
+                            <input id="startDate"
+                                   name="startDate"
+                                   type="datetime-local"
+                                   th:value="${startDate != null ? #temporals.format(startDate, 'yyyy-MM-dd''T''HH:mm') : ''}">
+                        </div>
+                        <div class="filter-group">
+                            <label for="endDate">End Date &amp; Time</label>
+                            <input id="endDate"
+                                   name="endDate"
+                                   type="datetime-local"
+                                   th:value="${endDate != null ? #temporals.format(endDate, 'yyyy-MM-dd''T''HH:mm') : ''}">
+                        </div>
+                        <div class="filter-group">
+                            <label for="limit">Top Limit</label>
+                            <input id="limit" name="limit" type="number" min="1" max="50"
+                                   th:value="${selectedLimit != null ? selectedLimit : 10}">
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button type="submit" class="btn btn-primary" name="mode" value="ALL">Apply Filter</button>
+                        <a href="/sales" class="btn btn-secondary">Reset</a>
+                    </div>
+                    <p class="section-title">Quick Ranking Buttons</p>
+                    <div class="mode-actions">
+                        <button type="submit" class="btn btn-warning" name="mode" value="TOP_SALES">Top Sales</button>
+                        <button type="submit" class="btn btn-success" name="mode" value="TOP_PRODUCTS">Top Products</button>
+                        <button type="submit" class="btn btn-info" name="mode" value="TOP_LOCATIONS">Top Locations</button>
+                    </div>
+                </form>
+            </div>
+
             <div class="summary-cards" th:if="${!sales.isEmpty()}">
                 <div class="summary-card">
                     <div class="number" th:text="${sales.size()}">0</div>
@@ -147,6 +323,47 @@
                     <div class="number" th:text="'$' + ${#numbers.formatDecimal(totalRevenue, 1, 2)}">$0.00</div>
                     <div class="label">Total Revenue</div>
                 </div>
+            </div>
+
+            <div class="summary-cards" th:if="${hasAnalyticsFilters and analytics != null}">
+                <div class="summary-card">
+                    <div class="number" th:text="${analytics.totalQuantity}">0</div>
+                    <div class="label">Total Quantity Sold</div>
+                </div>
+                <div class="summary-card">
+                    <div class="number" th:text="${analytics.maxSingleSaleQuantity}">0</div>
+                    <div class="label">Max Quantity in Single Sale</div>
+                </div>
+                <div class="summary-card">
+                    <div class="number" th:text="${analytics.maxDailyTransactionCount}">0</div>
+                    <div class="label">Max Sales Count in One Day</div>
+                </div>
+                <div class="summary-card">
+                    <div class="number" th:text="${analytics.maxDailyQuantity}">0</div>
+                    <div class="label">Max Quantity in One Day</div>
+                </div>
+            </div>
+
+            <div class="ranking-card" th:if="${rankingRows != null}">
+                <h3 th:text="${rankingTitle}">Ranking</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Transactions</th>
+                            <th>Quantity</th>
+                            <th>Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="row : ${rankingRows}">
+                            <td th:text="${row.label}">Label</td>
+                            <td th:text="${row.transactions}">0</td>
+                            <td th:text="${row.quantity}">0</td>
+                            <td th:text="'$' + ${#numbers.formatDecimal(row.revenue, 1, 2)}">$0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             
             <div th:if="${sales.isEmpty()}" class="empty-state">
@@ -172,7 +389,7 @@
                     <tr th:each="sale : ${sales}">
                         <td th:text="${sale.saleId}">1</td>
                         <td th:text="${#temporals.format(sale.saleDate, 'yyyy-MM-dd HH:mm')}">2024-01-01</td>
-                        <td th:text="${sale.customer.firstName} + ' ' + ${sale.customer.lastName}">Customer Name</td>
+                        <td th:text="${sale.customer.firstName + ' ' + sale.customer.lastName}">Customer Name</td>
                         <td th:text="${sale.product.productName}">Product Name</td>
                         <td th:text="${sale.quantity}">1</td>
                         <td th:text="'$' + ${#numbers.formatDecimal(sale.unitPrice, 1, 2)}">$0.00</td>

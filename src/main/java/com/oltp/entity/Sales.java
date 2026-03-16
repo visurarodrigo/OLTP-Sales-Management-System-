@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
     @Index(name = "idx_customer_id", columnList = "customer_id"),
     @Index(name = "idx_product_id", columnList = "product_id"),
     @Index(name = "idx_location_id", columnList = "location_id"),
+    @Index(name = "idx_product_location_date", columnList = "product_id, location_id, sale_date"),
     @Index(name = "idx_order_status", columnList = "order_status")
 })
 @Data

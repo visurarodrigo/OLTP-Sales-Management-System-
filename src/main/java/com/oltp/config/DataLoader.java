@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 /**
@@ -29,6 +30,8 @@ import java.util.Random;
 @RequiredArgsConstructor
 @Slf4j
 public class DataLoader implements CommandLineRunner {
+
+    private static final int TARGET_RECORDS = 100;
 
     private final CustomerService customerService;
     private final ProductService productService;
@@ -85,6 +88,34 @@ public class DataLoader implements CommandLineRunner {
         locations.add(createLocation("ONL001", "Online Store", "ONLINE", 
             "Virtual Location", "Seattle", "WA", "USA", "98101", 
             "800-555-0006", "online@store.com", "Digital Team", 0));
+
+        String[] cities = {"Dallas", "Houston", "Atlanta", "Portland", "Las Vegas", "Orlando", "Nashville", "Detroit"};
+        String[] states = {"TX", "TX", "GA", "OR", "NV", "FL", "TN", "MI"};
+        String[] locationTypes = {"RETAIL", "OUTLET", "WAREHOUSE", "ONLINE"};
+
+        while (locations.size() < TARGET_RECORDS) {
+            int index = locations.size() + 1;
+            int cityIndex = (index - 1) % cities.length;
+            String storeCode = String.format("LOC%03d", index);
+            String city = cities[cityIndex];
+            String state = states[cityIndex];
+            String type = locationTypes[(index - 1) % locationTypes.length];
+
+            locations.add(createLocation(
+                    storeCode,
+                    city + " " + type + " " + index,
+                    type,
+                    (100 + index) + " Commerce St",
+                    city,
+                    state,
+                    "USA",
+                    String.format("%05d", 10000 + index),
+                    "555-7" + String.format("%04d", index),
+                    "location" + index + "@store.com",
+                    "Manager " + index,
+                    300 + random.nextInt(9701)
+            ));
+        }
 
         for (Location location : locations) {
             locationService.saveLocation(location);
@@ -147,6 +178,28 @@ public class DataLoader implements CommandLineRunner {
 
         customers.add(createCustomer("Maria", "Garcia", "maria.garcia@email.com", "555-0110", 
             "1994-06-08", "1000 Poplar Blvd", "Phoenix", "AZ", "USA", "85001"));
+
+        String[] cities = {"New York", "Los Angeles", "Chicago", "San Francisco", "Miami", "Seattle", "Boston", "Austin", "Denver", "Phoenix"};
+        String[] states = {"NY", "CA", "IL", "CA", "FL", "WA", "MA", "TX", "CO", "AZ"};
+
+        while (customers.size() < TARGET_RECORDS) {
+            int index = customers.size() + 1;
+            int cityIndex = (index - 1) % cities.length;
+            LocalDate dob = LocalDate.of(1975 + (index % 25), ((index % 12) + 1), ((index % 28) + 1));
+
+            customers.add(createCustomer(
+                    "Customer" + index,
+                    "User" + index,
+                    "customer" + index + "@email.com",
+                    "555-2" + String.format("%04d", index),
+                    dob.toString(),
+                    (200 + index) + " Market Street",
+                    cities[cityIndex],
+                    states[cityIndex],
+                    "USA",
+                    String.format("%05d", 20000 + index)
+            ));
+        }
 
         for (Customer customer : customers) {
             customerService.saveCustomer(customer);
@@ -212,6 +265,30 @@ public class DataLoader implements CommandLineRunner {
         products.add(createProduct("BEAUTY001", "Skincare Set", "Complete skincare routine", 
             "Beauty", "Skincare", "79.99", "39.99", 90, 20, "GlowBeauty"));
 
+        String[] categories = {"Electronics", "Home & Kitchen", "Clothing", "Books", "Sports", "Beauty"};
+        String[] subCategories = {"Computers", "Appliances", "Footwear", "Fiction", "Fitness", "Skincare"};
+        String[] brands = {"NovaTech", "UrbanHome", "PeakFit", "ReadHouse", "ActiveCore", "PureGlow"};
+
+        while (products.size() < TARGET_RECORDS) {
+            int index = products.size() + 1;
+            int bucket = (index - 1) % categories.length;
+            double price = 20.0 + random.nextInt(480) + (random.nextInt(100) / 100.0);
+            double cost = price * (0.55 + (random.nextInt(20) / 100.0));
+
+            products.add(createProduct(
+                    String.format("GEN%03d", index),
+                    categories[bucket] + " Item " + index,
+                    "Auto-generated sample product " + index,
+                    categories[bucket],
+                    subCategories[bucket],
+                    String.format(Locale.US, "%.2f", price),
+                    String.format(Locale.US, "%.2f", cost),
+                    40 + random.nextInt(220),
+                    10 + random.nextInt(25),
+                    brands[bucket]
+            ));
+        }
+
         for (Product product : products) {
             productService.saveProduct(product);
         }
@@ -243,8 +320,8 @@ public class DataLoader implements CommandLineRunner {
         String[] paymentMethods = {"CASH", "CREDIT_CARD", "DEBIT_CARD", "DIGITAL_WALLET"};
         String[] orderStatuses = {"COMPLETED", "PROCESSING", "COMPLETED", "COMPLETED"}; // More completed orders
 
-        // Generate 30 sales transactions
-        for (int i = 0; i < 30; i++) {
+        // Generate 100 sales transactions
+        for (int i = 0; i < TARGET_RECORDS; i++) {
             Customer customer = customers.get(random.nextInt(customers.size()));
             Product product = products.get(random.nextInt(products.size()));
             Location location = locations.get(random.nextInt(locations.size()));

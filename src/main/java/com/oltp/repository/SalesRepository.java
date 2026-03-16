@@ -23,6 +23,12 @@ public interface SalesRepository extends JpaRepository<Sales, Long> {
     List<Sales> findByLocation_LocationId(Long locationId);
     
     List<Sales> findBySaleDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+
+        List<Sales> findByProduct_ProductIdAndLocation_LocationIdAndSaleDateBetween(
+            Long productId,
+            Long locationId,
+            LocalDateTime startDate,
+            LocalDateTime endDate);
     
     List<Sales> findByOrderStatus(String orderStatus);
     
