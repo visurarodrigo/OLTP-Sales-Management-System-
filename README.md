@@ -22,8 +22,8 @@ A **Spring Boot** application demonstrating an **Online Transaction Processing (
 ## Quick Start
 
 ### Prerequisites
-- **Java 8 or higher** (JDK 8, 11, 17, or 21)
-- **Maven 3.6+** installed and configured
+- **Java 21 (LTS)**
+- **Maven 3.9+** installed and configured
 - **Port 8080** available
 
 ### Running the Application
@@ -183,8 +183,8 @@ Records individual sales transactions with complete transaction details.
 
 ## Technology Stack
 
-- **Java 8** (Compatible with Java 8, 11, 17, 21)
-- **Spring Boot 2.7.18**
+- **Java 21 (LTS)**
+- **Spring Boot 3.5.0**
 - **Spring Data JPA** - Data access layer
 - **Spring Web MVC** - Web layer and REST API
 - **Thymeleaf** - Server-side template engine for web UI
