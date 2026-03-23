@@ -63,10 +63,244 @@ It handles day-to-day operations such as:
 ## Quick Start
 
 ### Prerequisites
+<<<<<<< HEAD
 
 - JDK 21
 - Maven 3.9+
 - Port 8080 available
+=======
+- **Java 21 (LTS)**
+- **Maven 3.9+** installed and configured
+- **Port 8080** available
+
+### Running the Application
+
+**Windows:**
+```cmd
+.\run-app.bat
+```
+
+**Linux/Mac or Manual:**
+```bash
+mvn spring-boot:run
+```
+
+**Access Points:**
+- **Dashboard:** http://localhost:8080 (Main web interface)
+- **Products:** http://localhost:8080/products (Product management)
+- **Customers:** http://localhost:8080/customers (Customer management)
+- **Locations:** http://localhost:8080/locations (Store locations)
+- **Sales:** http://localhost:8080/sales (Sales transactions)
+- **H2 Console:** http://localhost:8080/h2-console (Database viewer)
+  - JDBC URL: `jdbc:h2:mem:oltp_sales_db`
+  - Username: `sa`
+  - Password: _(leave blank)_
+- **REST API Base:** http://localhost:8080/api/
+
+### Stopping the Application
+Press `Ctrl+C` in the terminal
+
+## Database Schema
+
+### Tables and OLTP-Optimized Attributes
+
+#### 1. **Customer Table**
+Stores customer information with attributes optimized for quick lookups and transactional processing.
+
+**Attributes:**
+- `customer_id` (PK) - Auto-incrementing primary key for fast indexing
+- `first_name`, `last_name` - Customer name
+- `email` - Unique identifier, indexed for quick searches
+- `phone` - Indexed for contact lookups
+- `date_of_birth` - Customer demographics
+- `address`, `city`, `state`, `country`, `postal_code` - Location details
+- `customer_status` - ACTIVE, INACTIVE, SUSPENDED (for business logic)
+- `created_at`, `updated_at` - Audit timestamps
+
+**OLTP Features:**
+- Indexed email and phone for fast customer lookup during checkout
+- Status field enables quick filtering of active customers
+- Normalized structure reduces redundancy
+- Timestamps for audit trail
+
+#### 2. **Product Table**
+Manages product catalog with real-time inventory tracking.
+
+**Attributes:**
+- `product_id` (PK) - Primary key
+- `sku` - Stock Keeping Unit, unique identifier indexed
+- `product_name`, `description` - Product details
+- `category`, `sub_category` - Indexed for filtering
+- `price`, `cost_price` - Pricing information
+- `stock_quantity` - Real-time inventory count
+- `reorder_level` - Threshold for restocking alerts
+- `product_status` - AVAILABLE, OUT_OF_STOCK, DISCONTINUED
+- `brand`, `weight` - Additional product attributes
+- `created_at`, `updated_at` - Audit timestamps
+
+**OLTP Features:**
+- SKU indexed for quick product lookups at POS
+- Real-time stock tracking for inventory management
+- Category indexing enables fast product filtering
+- Reorder level supports automated inventory alerts
+
+#### 3. **Location Table**
+Tracks physical stores, warehouses, and online channels.
+
+**Attributes:**
+- `location_id` (PK) - Primary key
+- `store_code` - Unique store identifier, indexed
+- `store_name` - Location name
+- `location_type` - RETAIL, WAREHOUSE, OUTLET, ONLINE
+- `address`, `city`, `state`, `country`, `postal_code` - Geographic data
+- `phone`, `email` - Contact information
+- `manager_name` - Store manager
+- `opening_time`, `closing_time` - Operating hours
+- `store_capacity` - Physical capacity or square footage
+- `location_status` - ACTIVE, INACTIVE, UNDER_RENOVATION
+- `created_at`, `updated_at` - Audit timestamps
+
+**OLTP Features:**
+- Store code indexing for fast location lookups
+- Location type enables channel-based reporting
+- Status field for operational filtering
+- Geographic indexing for regional queries
+
+#### 4. **Sales Table**
+Records individual sales transactions with complete transaction details.
+
+**Attributes:**
+- `sale_id` (PK) - Primary key
+- `order_number` - Unique order identifier
+- `customer_id` (FK) - References Customer table
+- `product_id` (FK) - References Product table
+- `location_id` (FK) - References Location table
+- `quantity` - Items purchased
+- `unit_price`, `subtotal` - Pricing breakdown
+- `discount_amount`, `tax_amount` - Financial calculations
+- `total_amount` - Final transaction amount
+- `payment_method` - CASH, CREDIT_CARD, DEBIT_CARD, DIGITAL_WALLET
+- `payment_status` - PAID, PENDING, REFUNDED, FAILED
+- `order_status` - COMPLETED, PROCESSING, CANCELLED, RETURNED
+- `sale_date` - Transaction timestamp, heavily indexed
+- `delivery_date` - Fulfillment date
+- `notes` - Additional transaction notes
+- `created_at`, `updated_at` - Audit timestamps
+
+**OLTP Features:**
+- Multiple indexes (date, customer, product, location) for fast queries
+- Foreign key constraints ensure referential integrity
+- Status fields enable workflow management
+- Sale date indexing optimizes time-based reporting
+- Transaction-level detail supports financial reconciliation
+
+## OLTP Design Principles Applied
+
+### 1. **Normalization**
+- Tables are normalized to 3NF to reduce data redundancy
+- Foreign key relationships maintain data integrity
+- No duplicate customer or product information
+
+### 2. **Indexing Strategy**
+- Primary keys on all ID columns
+- Secondary indexes on frequently queried columns (email, SKU, store_code, sale_date)
+- Composite indexes where needed for multi-column queries
+- Index on status fields for filtering
+
+### 3. **Data Integrity**
+- Foreign key constraints enforce referential integrity
+- Unique constraints on business keys (email, SKU, store_code, order_number)
+- NOT NULL constraints on critical fields
+- Cascade rules for related data management
+
+### 4. **Audit Trail**
+- `created_at` and `updated_at` timestamps on all tables
+- Automatic timestamp management via JPA annotations
+- Historical tracking capability
+
+### 5. **Transaction Support**
+- JPA/Hibernate provides ACID transaction support
+- Service layer methods are transactional
+- Stock updates are atomic with sales creation
+
+### 6. **Real-time Operations**
+- Immediate stock quantity updates
+- Real-time customer and order status changes
+- Current inventory visibility
+
+## Technology Stack
+
+- **Java 21 (LTS)**
+- **Spring Boot 3.5.0**
+- **Spring Data JPA** - Data access layer
+- **Spring Web MVC** - Web layer and REST API
+- **Thymeleaf** - Server-side template engine for web UI
+- **Hibernate** - ORM framework
+- **H2 Database** - In-memory database (easily switchable to MySQL/PostgreSQL)
+- **Lombok** - Reduces boilerplate code
+- **Jackson** - JSON serialization
+- **Maven** - Build and dependency management
+
+## Project Structure
+
+```
+oltp-sales-system/
+├── src/
+│   └── main/
+│       ├── java/com/oltp/
+│       │   ├── SalesSystemApplication.java    # Main application entry point
+│       │   ├── config/
+│       │   │   └── DataLoader.java            # Sample data initialization
+│       │   ├── controller/
+│       │   │   ├── HomeController.java        # Dashboard web page
+│       │   │   ├── WebProductController.java  # Product web UI controller
+│       │   │   ├── WebCustomerController.java # Customer web UI controller
+│       │   │   ├── WebLocationController.java # Location web UI controller
+│       │   │   ├── WebSalesController.java    # Sales web UI controller
+│       │   │   ├── CustomerController.java    # Customer REST API
+│       │   │   ├── ProductController.java     # Product REST API
+│       │   │   ├── LocationController.java    # Location REST API
+│       │   │   └── SalesController.java       # Sales REST API
+│       │   ├── entity/
+│       │   │   ├── Customer.java              # Customer entity
+│       │   │   ├── Product.java               # Product entity
+│       │   │   ├── Location.java              # Location entity
+│       │   │   └── Sales.java                 # Sales entity
+│       │   ├── repository/
+│       │   │   ├── CustomerRepository.java    # Customer data access
+│       │   │   ├── ProductRepository.java     # Product data access
+│       │   │   ├── LocationRepository.java    # Location data access
+│       │   │   └── SalesRepository.java       # Sales data access
+│       │   └── service/
+│       │       ├── CustomerService.java       # Customer business logic
+│       │       ├── ProductService.java        # Product business logic
+│       │       ├── LocationService.java       # Location business logic
+│       │       └── SalesService.java          # Sales business logic
+│       └── resources/
+│           ├── templates/                     # Thymeleaf HTML templates
+│           │   ├── index.html                 # Dashboard page
+│           │   ├── products.html              # Product list page
+│           │   ├── product-form.html          # Add/Edit product form
+│           │   ├── product-details.html       # Product details page
+│           │   ├── customers.html             # Customer list page
+│           │   ├── customer-form.html         # Add/Edit customer form
+│           │   ├── locations.html             # Locations display page
+│           │   └── sales.html                 # Sales transactions page
+│           └── application.properties         # Application configuration
+├── pom.xml                                    # Maven dependencies
+├── run-app.bat                                # Windows startup script
+├── .gitignore                                 # Git ignore rules
+├── README.md                                  # This file
+├── OLTP_DESIGN.md                             # Detailed design documentation
+└── ER_DIAGRAM.md                              # Entity relationship diagram
+```
+## Setup Instructions
+
+### 1. Install Java
+Download and install JDK 8 or higher from:
+- [Oracle JDK](https://www.oracle.com/java/technologies/downloads/)
+- [OpenJDK](https://adoptium.net/)
+>>>>>>> da18db105b3f25897f504db7be76316d7a352194
 
 Verify installation:
 
