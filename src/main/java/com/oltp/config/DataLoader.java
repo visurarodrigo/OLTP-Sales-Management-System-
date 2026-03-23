@@ -70,32 +70,32 @@ public class DataLoader implements CommandLineRunner {
     private List<Location> loadLocations() {
         List<Location> locations = new ArrayList<>();
 
-        locations.add(createLocation("STR001", "Downtown Store", "RETAIL", 
-            "123 Main Street", "New York", "NY", "USA", "10001", 
-            "212-555-0001", "downtown@store.com", "John Manager", 500));
+        locations.add(createLocation("STR001", "Colombo Fort Store", "RETAIL",
+            "123 Galle Road", "Colombo", "Western", "Sri Lanka", "00100",
+            "+94-11-200-0001", "colombofort@store.lk", "Nimal Perera", 500));
 
-        locations.add(createLocation("STR002", "Westside Mall", "RETAIL", 
-            "456 West Avenue", "Los Angeles", "CA", "USA", "90001", 
-            "213-555-0002", "westside@store.com", "Sarah Smith", 800));
+        locations.add(createLocation("STR002", "Kandy City Mall", "RETAIL",
+            "456 Peradeniya Road", "Kandy", "Central", "Sri Lanka", "20000",
+            "+94-81-200-0002", "kandycity@store.lk", "Sajini Fernando", 800));
 
-        locations.add(createLocation("STR003", "East Bay Outlet", "OUTLET", 
-            "789 Bay Road", "San Francisco", "CA", "USA", "94102", 
-            "415-555-0003", "eastbay@store.com", "Mike Johnson", 600));
+        locations.add(createLocation("STR003", "Galle Harbor Outlet", "OUTLET",
+            "789 Matara Road", "Galle", "Southern", "Sri Lanka", "80000",
+            "+94-91-200-0003", "galleharbor@store.lk", "Kavindu Silva", 600));
 
-        locations.add(createLocation("WHS001", "Central Warehouse", "WAREHOUSE", 
-            "1000 Industrial Blvd", "Chicago", "IL", "USA", "60601", 
-            "312-555-0004", "warehouse@store.com", "Robert Brown", 10000));
+        locations.add(createLocation("WHS001", "Kelaniya Central Warehouse", "WAREHOUSE",
+            "1000 Kandy Road", "Kelaniya", "Western", "Sri Lanka", "11600",
+            "+94-11-200-0004", "warehouse@store.lk", "Ruwan Jayasinghe", 10000));
 
-        locations.add(createLocation("STR004", "Miami Beach Store", "RETAIL", 
-            "200 Ocean Drive", "Miami", "FL", "USA", "33139", 
-            "305-555-0005", "miami@store.com", "Lisa Garcia", 450));
+        locations.add(createLocation("STR004", "Negombo Beach Store", "RETAIL",
+            "200 Beach Road", "Negombo", "Western", "Sri Lanka", "11500",
+            "+94-31-200-0005", "negombo@store.lk", "Ishara Senanayake", 450));
 
-        locations.add(createLocation("ONL001", "Online Store", "ONLINE", 
-            "Virtual Location", "Seattle", "WA", "USA", "98101", 
-            "800-555-0006", "online@store.com", "Digital Team", 0));
+        locations.add(createLocation("ONL001", "Lanka Online Store", "ONLINE",
+            "Virtual Commerce Hub", "Colombo", "Western", "Sri Lanka", "00200",
+            "+94-11-200-0006", "online@store.lk", "Digital Team", 0));
 
-        String[] cities = {"Dallas", "Houston", "Atlanta", "Portland", "Las Vegas", "Orlando", "Nashville", "Detroit"};
-        String[] states = {"TX", "TX", "GA", "OR", "NV", "FL", "TN", "MI"};
+        String[] cities = {"Jaffna", "Kurunegala", "Matara", "Anuradhapura", "Batticaloa", "Trincomalee", "Ratnapura", "Badulla"};
+        String[] states = {"Northern", "North Western", "Southern", "North Central", "Eastern", "Eastern", "Sabaragamuwa", "Uva"};
         String[] locationTypes = {"RETAIL", "OUTLET", "WAREHOUSE", "ONLINE"};
 
         while (locations.size() < TARGET_RECORDS) {
@@ -110,13 +110,13 @@ public class DataLoader implements CommandLineRunner {
                     storeCode,
                     city + " " + type + " " + index,
                     type,
-                    (100 + index) + " Commerce St",
+                    (100 + index) + " Main Road",
                     city,
                     state,
-                    "USA",
-                    String.format("%05d", 10000 + index),
-                    "555-7" + String.format("%04d", index),
-                    "location" + index + "@store.com",
+                    "Sri Lanka",
+                    String.format("%05d", 40000 + index),
+                    "+94-70-7" + String.format("%04d", index),
+                    "location" + index + "@store.lk",
                     "Manager " + index,
                     300 + random.nextInt(9701)
             ));
@@ -154,55 +154,60 @@ public class DataLoader implements CommandLineRunner {
     private List<Customer> loadCustomers() {
         List<Customer> customers = new ArrayList<>();
 
-        customers.add(createCustomer("John", "Doe", "john.doe@email.com", "555-0101", 
-            "1990-05-15", "100 Oak St", "New York", "NY", "USA", "10001"));
+        customers.add(createCustomer("Kasun", "Perera", "kasun.perera@email.lk", "+94-71-000-0101",
+            "1990-05-15", "100 Galle Road", "Colombo", "Western", "Sri Lanka", "00300"));
 
-        customers.add(createCustomer("Jane", "Smith", "jane.smith@email.com", "555-0102", 
-            "1985-08-22", "200 Pine Ave", "Los Angeles", "CA", "USA", "90001"));
+        customers.add(createCustomer("Nadeesha", "Silva", "nadeesha.silva@email.lk", "+94-71-000-0102",
+            "1985-08-22", "200 Peradeniya Road", "Kandy", "Central", "Sri Lanka", "20000"));
 
-        customers.add(createCustomer("Michael", "Johnson", "michael.j@email.com", "555-0103", 
-            "1992-03-10", "300 Maple Dr", "Chicago", "IL", "USA", "60601"));
+        customers.add(createCustomer("Tharindu", "Fernando", "tharindu.f@email.lk", "+94-71-000-0103",
+            "1992-03-10", "300 Matara Road", "Galle", "Southern", "Sri Lanka", "80000"));
 
-        customers.add(createCustomer("Emily", "Williams", "emily.w@email.com", "555-0104", 
-            "1988-11-30", "400 Elm Blvd", "San Francisco", "CA", "USA", "94102"));
+        customers.add(createCustomer("Chathuri", "Jayawardena", "chathuri.j@email.lk", "+94-71-000-0104",
+            "1988-11-30", "400 Temple Road", "Jaffna", "Northern", "Sri Lanka", "40000"));
 
-        customers.add(createCustomer("David", "Brown", "david.brown@email.com", "555-0105", 
-            "1995-07-18", "500 Cedar Ln", "Miami", "FL", "USA", "33139"));
+        customers.add(createCustomer("Dilshan", "Wijesinghe", "dilshan.w@email.lk", "+94-71-000-0105",
+            "1995-07-18", "500 Lake Road", "Kurunegala", "North Western", "Sri Lanka", "60000"));
 
-        customers.add(createCustomer("Sarah", "Davis", "sarah.davis@email.com", "555-0106", 
-            "1991-01-25", "600 Birch Rd", "Seattle", "WA", "USA", "98101"));
+        customers.add(createCustomer("Sanduni", "Bandara", "sanduni.b@email.lk", "+94-71-000-0106",
+            "1991-01-25", "600 Station Road", "Negombo", "Western", "Sri Lanka", "11500"));
 
-        customers.add(createCustomer("Robert", "Miller", "robert.m@email.com", "555-0107", 
-            "1987-09-14", "700 Spruce St", "Boston", "MA", "USA", "02101"));
+        customers.add(createCustomer("Ravindu", "Gunasekara", "ravindu.g@email.lk", "+94-71-000-0107",
+            "1987-09-14", "700 New Town Road", "Anuradhapura", "North Central", "Sri Lanka", "50000"));
 
-        customers.add(createCustomer("Jennifer", "Wilson", "jennifer.w@email.com", "555-0108", 
-            "1993-12-05", "800 Walnut Ave", "Austin", "TX", "USA", "73301"));
+        customers.add(createCustomer("Iresha", "Kumari", "iresha.k@email.lk", "+94-71-000-0108",
+            "1993-12-05", "800 Market Road", "Batticaloa", "Eastern", "Sri Lanka", "30000"));
 
-        customers.add(createCustomer("James", "Moore", "james.moore@email.com", "555-0109", 
-            "1989-04-20", "900 Ash Dr", "Denver", "CO", "USA", "80201"));
+        customers.add(createCustomer("Sameera", "Ekanayake", "sameera.e@email.lk", "+94-71-000-0109",
+            "1989-04-20", "900 Harbour Road", "Trincomalee", "Eastern", "Sri Lanka", "31000"));
 
-        customers.add(createCustomer("Maria", "Garcia", "maria.garcia@email.com", "555-0110", 
-            "1994-06-08", "1000 Poplar Blvd", "Phoenix", "AZ", "USA", "85001"));
+        customers.add(createCustomer("Ayesha", "Nawaz", "ayesha.n@email.lk", "+94-71-000-0110",
+            "1994-06-08", "1000 Main Street", "Badulla", "Uva", "Sri Lanka", "90000"));
 
-        String[] cities = {"New York", "Los Angeles", "Chicago", "San Francisco", "Miami", "Seattle", "Boston", "Austin", "Denver", "Phoenix"};
-        String[] states = {"NY", "CA", "IL", "CA", "FL", "WA", "MA", "TX", "CO", "AZ"};
+        String[] cities = {"Colombo", "Kandy", "Galle", "Jaffna", "Kurunegala", "Negombo", "Anuradhapura", "Batticaloa", "Trincomalee", "Badulla"};
+        String[] states = {"Western", "Central", "Southern", "Northern", "North Western", "Western", "North Central", "Eastern", "Eastern", "Uva"};
+        String[] firstNames = {"Amaya", "Kavindu", "Nethmi", "Sahan", "Ishani", "Thilina", "Dinuka", "Shavindi", "Prabath", "Hasini", "Chamara", "Maleesha"};
+        String[] lastNames = {"Perera", "Silva", "Fernando", "Wijesinghe", "Jayawardena", "Gunasekara", "Ekanayake", "Bandara", "Senanayake", "Ranasinghe"};
 
         while (customers.size() < TARGET_RECORDS) {
             int index = customers.size() + 1;
             int cityIndex = (index - 1) % cities.length;
             LocalDate dob = LocalDate.of(1975 + (index % 25), ((index % 12) + 1), ((index % 28) + 1));
+            String firstName = firstNames[(index - 1) % firstNames.length];
+            String lastName = lastNames[((index - 1) / firstNames.length) % lastNames.length];
+            String emailLocalPart = (firstName + "." + lastName + "." + index).toLowerCase(Locale.ROOT);
 
             customers.add(createCustomer(
-                    "Customer" + index,
-                    "User" + index,
-                    "customer" + index + "@email.com",
-                    "555-2" + String.format("%04d", index),
+                    firstName,
+                    lastName,
+                    emailLocalPart + "@email.lk",
+                    "+94-72-2" + String.format("%04d", index),
                     dob.toString(),
-                    (200 + index) + " Market Street",
+                    (200 + index) + " Temple Road",
                     cities[cityIndex],
                     states[cityIndex],
-                    "USA",
-                    String.format("%05d", 20000 + index)
+                    "Sri Lanka",
+                    String.format("%05d", 50000 + index)
             ));
         }
 
@@ -234,56 +239,56 @@ public class DataLoader implements CommandLineRunner {
     private List<Product> loadProducts() {
         List<Product> products = new ArrayList<>();
 
-        products.add(createProduct("ELEC001", "Laptop Pro 15", "High-performance laptop", 
-            "Electronics", "Computers", "1299.99", "899.99", 50, 10, "TechBrand"));
+        products.add(createProduct("TEA001", "Ceylon Tea Gift Pack", "Premium Ceylon black tea assortment", 
+            "Groceries", "Tea", "2490.00", "1490.00", 150, 30, "LankaTea"));
 
-        products.add(createProduct("ELEC002", "Smartphone X", "Latest smartphone", 
-            "Electronics", "Mobile", "899.99", "599.99", 100, 20, "PhoneCorp"));
+        products.add(createProduct("SPC001", "Ceylon Cinnamon Sticks", "Export-grade cinnamon bundle", 
+            "Groceries", "Spices", "1290.00", "690.00", 250, 50, "SpiceIsland"));
 
-        products.add(createProduct("ELEC003", "Wireless Headphones", "Noise-cancelling headphones", 
-            "Electronics", "Audio", "249.99", "149.99", 150, 30, "AudioMax"));
+        products.add(createProduct("APP001", "Batik Saree", "Handcrafted Sri Lankan batik saree", 
+            "Clothing", "Traditional Wear", "15990.00", "8990.00", 90, 20, "BatikCeylon"));
 
-        products.add(createProduct("HOME001", "Coffee Maker Deluxe", "Programmable coffee maker", 
-            "Home & Kitchen", "Appliances", "129.99", "69.99", 80, 15, "BrewMaster"));
+        products.add(createProduct("APP002", "Sarong Cotton", "Classic cotton sarong", 
+            "Clothing", "Traditional Wear", "3490.00", "1890.00", 180, 40, "IslandWeave"));
 
-        products.add(createProduct("HOME002", "Blender Pro", "High-speed blender", 
-            "Home & Kitchen", "Appliances", "89.99", "49.99", 60, 15, "KitchenPro"));
+        products.add(createProduct("FOOD001", "Kithul Treacle", "Natural palm syrup from Sri Lanka", 
+            "Groceries", "Sweeteners", "1890.00", "990.00", 140, 30, "RuhunuFoods"));
 
-        products.add(createProduct("CLOTH001", "Running Shoes", "Comfortable running shoes", 
-            "Clothing", "Footwear", "119.99", "59.99", 200, 40, "SportFit"));
+        products.add(createProduct("HOME001", "Clay Pot Set", "Traditional earthenware cooking pots", 
+            "Home & Kitchen", "Cookware", "4290.00", "2390.00", 100, 20, "CeylonHome"));
 
-        products.add(createProduct("CLOTH002", "Winter Jacket", "Warm winter jacket", 
-            "Clothing", "Outerwear", "199.99", "99.99", 75, 15, "WarmWear"));
+        products.add(createProduct("HOME002", "Coconut Shell Bowl Set", "Eco-friendly handcrafted bowls", 
+            "Home & Kitchen", "Serveware", "2990.00", "1590.00", 130, 25, "EcoLanka"));
 
-        products.add(createProduct("BOOK001", "Python Programming", "Complete guide to Python", 
-            "Books", "Technology", "49.99", "24.99", 120, 25, "TechPublishers"));
+        products.add(createProduct("BOOK001", "History of Ceylon", "Illustrated history book", 
+            "Books", "History", "2490.00", "1290.00", 80, 15, "SerendibPress"));
 
-        products.add(createProduct("BOOK002", "Science Fiction Novel", "Bestselling sci-fi book", 
-            "Books", "Fiction", "24.99", "12.99", 180, 35, "NovelHouse"));
+        products.add(createProduct("BOOK002", "Sinhala Folk Tales", "Collection of classic folk stories", 
+            "Books", "Culture", "2190.00", "1190.00", 110, 20, "LakbimaBooks"));
 
-        products.add(createProduct("SPORT001", "Yoga Mat", "Premium yoga mat", 
-            "Sports", "Fitness", "39.99", "19.99", 150, 30, "FitLife"));
+        products.add(createProduct("SPORT001", "Cricket Bat", "Seasoned willow cricket bat", 
+            "Sports", "Cricket", "8990.00", "4990.00", 95, 20, "LionSport"));
 
-        products.add(createProduct("SPORT002", "Dumbbell Set", "Adjustable dumbbell set", 
-            "Sports", "Fitness", "149.99", "89.99", 50, 10, "StrengthCo"));
+        products.add(createProduct("SPORT002", "Cricket Ball Pack", "Match-grade leather cricket balls", 
+            "Sports", "Cricket", "2490.00", "1390.00", 200, 40, "LionSport"));
 
-        products.add(createProduct("BEAUTY001", "Skincare Set", "Complete skincare routine", 
-            "Beauty", "Skincare", "79.99", "39.99", 90, 20, "GlowBeauty"));
+        products.add(createProduct("BEAUTY001", "Sandalwood Soap Set", "Herbal soap made with sandalwood", 
+            "Beauty", "Skincare", "1690.00", "890.00", 160, 35, "AyuCare"));
 
-        String[] categories = {"Electronics", "Home & Kitchen", "Clothing", "Books", "Sports", "Beauty"};
-        String[] subCategories = {"Computers", "Appliances", "Footwear", "Fiction", "Fitness", "Skincare"};
-        String[] brands = {"NovaTech", "UrbanHome", "PeakFit", "ReadHouse", "ActiveCore", "PureGlow"};
+        String[] categories = {"Groceries", "Home & Kitchen", "Clothing", "Books", "Sports", "Beauty"};
+        String[] subCategories = {"Tea", "Cookware", "Traditional Wear", "Culture", "Cricket", "Skincare"};
+        String[] brands = {"LankaEssentials", "CeylonHome", "IslandWear", "SerendibPress", "LionSport", "AyuCare"};
 
         while (products.size() < TARGET_RECORDS) {
             int index = products.size() + 1;
             int bucket = (index - 1) % categories.length;
-            double price = 20.0 + random.nextInt(480) + (random.nextInt(100) / 100.0);
+            double price = 850.0 + random.nextInt(24951) + (random.nextInt(100) / 100.0);
             double cost = price * (0.55 + (random.nextInt(20) / 100.0));
 
             products.add(createProduct(
                     String.format("GEN%03d", index),
-                    categories[bucket] + " Item " + index,
-                    "Auto-generated sample product " + index,
+                subCategories[bucket] + " Lanka Product " + index,
+                "Auto-generated Sri Lanka product for " + categories[bucket] + " catalog " + index,
                     categories[bucket],
                     subCategories[bucket],
                     String.format(Locale.US, "%.2f", price),

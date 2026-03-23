@@ -201,8 +201,8 @@
                 </div>
                 
                 <div class="detail-item">
-                    <div class="detail-label">Price</div>
-                    <div class="detail-value" th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">$99.99</div>
+                    <div class="detail-label">Price (LKR)</div>
+                    <div class="detail-value" th:text="'LKR ' + ${#numbers.formatDecimal(product.price, 1, 2)}">LKR 99.99</div>
                 </div>
                 
                 <div class="detail-item">

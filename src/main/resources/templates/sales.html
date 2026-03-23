@@ -320,7 +320,7 @@
                     <div class="label">Total Transactions</div>
                 </div>
                 <div class="summary-card">
-                    <div class="number" th:text="'$' + ${#numbers.formatDecimal(totalRevenue, 1, 2)}">$0.00</div>
+                    <div class="number" th:text="'LKR ' + ${#numbers.formatDecimal(totalRevenue, 1, 2)}">LKR 0.00</div>
                     <div class="label">Total Revenue</div>
                 </div>
             </div>
@@ -352,7 +352,7 @@
                             <th>Name</th>
                             <th>Transactions</th>
                             <th>Quantity</th>
-                            <th>Revenue</th>
+                            <th>Revenue (LKR)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -360,7 +360,7 @@
                             <td th:text="${row.label}">Label</td>
                             <td th:text="${row.transactions}">0</td>
                             <td th:text="${row.quantity}">0</td>
-                            <td th:text="'$' + ${#numbers.formatDecimal(row.revenue, 1, 2)}">$0.00</td>
+                            <td th:text="'LKR ' + ${#numbers.formatDecimal(row.revenue, 1, 2)}">LKR 0.00</td>
                         </tr>
                     </tbody>
                 </table>
@@ -380,8 +380,8 @@
                         <th>Customer</th>
                         <th>Product</th>
                         <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Total</th>
+                        <th>Price (LKR)</th>
+                        <th>Total (LKR)</th>
                         <th>Location</th>
                     </tr>
                 </thead>
@@ -392,8 +392,8 @@
                         <td th:text="${sale.customer.firstName + ' ' + sale.customer.lastName}">Customer Name</td>
                         <td th:text="${sale.product.productName}">Product Name</td>
                         <td th:text="${sale.quantity}">1</td>
-                        <td th:text="'$' + ${#numbers.formatDecimal(sale.unitPrice, 1, 2)}">$0.00</td>
-                        <td th:text="'$' + ${#numbers.formatDecimal(sale.totalAmount, 1, 2)}">$0.00</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(sale.unitPrice, 1, 2)}">LKR 0.00</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(sale.totalAmount, 1, 2)}">LKR 0.00</td>
                         <td th:text="${sale.location.city + ', ' + sale.location.state}">Location</td>
                     </tr>
                 </tbody>

@@ -204,7 +204,7 @@
                         <th>ID</th>
                         <th>Product Name</th>
                         <th>Category</th>
-                        <th>Price</th>
+                        <th>Price (LKR)</th>
                         <th>Stock</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -215,7 +215,7 @@
                         <td th:text="${product.productId}">1</td>
                         <td th:text="${product.productName}">Product Name</td>
                         <td th:text="${product.category}">Category</td>
-                        <td th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">$99.99</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(product.price, 1, 2)}">LKR 99.99</td>
                         <td th:text="${product.stockQuantity}">100</td>
                         <td>
                             <span th:if="${product.stockQuantity > 50}" class="badge badge-success">In Stock</span>

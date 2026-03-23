@@ -300,7 +300,7 @@ Or simply run:
 ## Sample Data
 
 The application automatically loads sample data on startup:
-- **100 Customers** across different US locations
+- **100 Customers** across different Sri Lankan locations
 - **100 Products** across multiple categories
 - **100 Locations** (retail, outlet, warehouse, and online)
 - **100 Sales Transactions** with various statuses
