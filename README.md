@@ -53,6 +53,31 @@ mvn spring-boot:run
 ### Stopping the Application
 Press `Ctrl+C` in the terminal
 
+## Repository Information
+
+### Git Repository
+- **Repository:** [OLTP Sales Management System](https://github.com/visurarodrigo/OLTP-Sales-Management-System-)
+- **Branch:** `main` (stable)
+- **License:** Educational purposes
+
+### Cloning the Repository
+```bash
+git clone https://github.com/visurarodrigo/OLTP-Sales-Management-System-.git
+cd "OLTP-Sales-Management-System-"
+```
+
+### Recent Changes
+```bash
+# View commit history
+git log --oneline -10
+
+# View current branch
+git branch --show-current
+
+# Check status
+git status
+```
+
 ## Database Schema
 
 ### Tables and OLTP-Optimized Attributes
@@ -398,11 +423,16 @@ The application provides a modern, user-friendly web interface built with Thymel
 | POST | `/api/benchmark/warehouse/rebuild` | Rebuilds dimension and fact tables from OLTP data |
 | GET | `/api/benchmark/sales-compare?productId=...&locationId=...&startDate=...&endDate=...&runs=20` | Compares query performance of OLTP vs dimensional model |
 
-### Example API Usage
+## Example API Usage
 
 **Get all customers:**
 ```bash
 curl http://localhost:8080/api/customers
+```
+
+**Get products needing reorder:**
+```bash
+curl http://localhost:8080/api/products/reorder
 ```
 
 **Create a new customer:**
@@ -410,34 +440,22 @@ curl http://localhost:8080/api/customers
 curl -X POST http://localhost:8080/api/customers \
   -H "Content-Type: application/json" \
   -d '{
-    "firstName": "John",
-    "lastName": "Doe",
-    "email": "john.doe@example.com",
-    "phone": "555-1234",
+    "firstName": "Ravi",
+    "lastName": "Jayaraman",
+    "email": "ravi.jayaraman@example.lk",
+    "phone": "+94-11-2345678",
     "customerStatus": "ACTIVE"
   }'
 ```
-| `GET /api/customers/email/{email}` | Customer by email |
-| `GET /api/products` | All products |
-| `GET /api/products/sku/{sku}` | Product by SKU |
-| `GET /api/products/category/{category}` | Products by category |
-| `GET /api/products/reorder` | Products needing restock |
-| `GET /api/locations` | All locations |
-| `GET /api/locations/active` | Active locations |
-| `GET /api/sales` | All sales |
-| `GET /api/sales/customer/{id}` | Sales by customer |
-| `GET /api/sales/product-location?...` | Sales by product + location + date range |
-| `GET /api/sales/analytics/product-location?...` | Max/total sales analytics for product + location + date range |
-| `POST /api/*` | Create new record |
 
-## Example API Usage
-
+**Get sales for a product in a location over a date range:**
 ```bash
-# Get all customers
-curl http://localhost:8080/api/customers
+curl "http://localhost:8080/api/sales/product-location?productId=1&locationId=1&startDate=2026-03-01T00:00:00&endDate=2026-03-31T23:59:59"
+```
 
-# Get products needing reorder
-curl http://localhost:8080/api/products/reorder
+**Compare OLTP vs Dimensional Model performance:**
+```bash
+curl "http://localhost:8080/api/benchmark/sales-compare?productId=1&locationId=1&startDate=2026-03-01T00:00:00&endDate=2026-03-31T23:59:59&runs=30"
 ```
 
 ## Switching to MySQL/PostgreSQL
