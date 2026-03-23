@@ -1,74 +1,27 @@
 # OLTP Sales Management System
 
-A Spring Boot application for Online Transaction Processing (OLTP) in sales management.
-
-It handles day-to-day operations such as:
-
-- customer management
-- product and inventory tracking
-- location management
-- sales transaction processing
-- analytics and benchmark comparison
-
-## Current Version
-
-- Java 21 (LTS)
-- Spring Boot 3.5.0
-- Jakarta Persistence (`jakarta.persistence.*`)
-- Maven 3.9+
-- H2 in-memory database (default)
-
----
+A **Spring Boot** application demonstrating an **Online Transaction Processing (OLTP)** database system for sales management, optimized for high-frequency transactional operations including real-time sales processing, inventory management, customer tracking, and location-based operations.
 
 ## Features
 
-### Web User Interface
+### 🎨 Web User Interface
+- **Dashboard** - Real-time statistics and quick navigation
+- **Product Management** - Full CRUD operations with search functionality
+- **Customer Management** - Add, edit, delete customers with search
+- **Location Viewer** - Display store locations in card layout
+- **Sales Transactions** - View all sales with revenue calculation
+- **Auto-SKU Generation** - Automatically generates SKU codes for products
+- **Responsive Design** - Modern gradient UI with smooth animations
 
-- Dashboard with quick statistics
-- Product management (add, view, edit in web flow, delete)
-- Customer management (add, view, edit in web flow, delete)
-- Location browsing
-- Sales transactions view with totals
-- Responsive UI for desktop and mobile
-
-### REST API
-
-- CRUD-style endpoints for customers, products, locations, and sales
-- Filter endpoints by status/category/date range
-- Revenue and product-location analytics
-- OLTP vs dimensional-model benchmark endpoints
-
-### Data and Benchmarking
-
-- OLTP transactional model (`customer`, `product`, `location`, `sales`)
-- Dimensional model (`dim_product`, `dim_location`, `dim_date`, `fact_sales`)
-- Performance comparison API for analytical queries
-
----
-
-## Technology Stack
-
-- Java 21 (LTS)
-- Spring Boot 3.5.0
-- Spring Data JPA
-- Spring Web MVC
-- Thymeleaf
-- Hibernate
-- H2 Database
-- Lombok
-- Maven
-
----
+### 🔌 REST API
+- Complete RESTful API for all entities
+- JSON-based data exchange
+- Support for CRUD operations
+- Transaction management
 
 ## Quick Start
 
 ### Prerequisites
-<<<<<<< HEAD
-
-- JDK 21
-- Maven 3.9+
-- Port 8080 available
-=======
 - **Java 21 (LTS)**
 - **Maven 3.9+** installed and configured
 - **Port 8080** available
@@ -300,308 +253,244 @@ oltp-sales-system/
 Download and install JDK 8 or higher from:
 - [Oracle JDK](https://www.oracle.com/java/technologies/downloads/)
 - [OpenJDK](https://adoptium.net/)
->>>>>>> da18db105b3f25897f504db7be76316d7a352194
 
 Verify installation:
-
 ```bash
 java -version
-mvn -version
 ```
 
-### Run the Application
+### 2. Install Maven
 
-Windows:
-
-```cmd
-run-app.bat
+**Windows (Using Chocolatey):**
+```powershell
+choco install maven -y
 ```
 
-Any platform:
+**Manual Installation:**
+1. Download from [Apache Maven](https://maven.apache.org/download.cgi)
+2. Extract to `C:\Program Files\Apache\maven`
+3. Add `MAVEN_HOME` and update `PATH` environment variables
 
+**Verify installation:**
 ```bash
+mvn --version
+```
+
+### 3. Configure Java Home (if needed)
+
+**Windows:**
+```cmd
+set JAVA_HOME=C:\Program Files\Java\jdk1.8.0_202
+```
+
+### 4. Build and Run
+
+Clone/download the project, then:
+```bash
+cd oltp-sales-system
+mvn clean install
 mvn spring-boot:run
 ```
 
-### Access Points
-
-- Dashboard: http://localhost:8080/
-- Products: http://localhost:8080/products
-- Customers: http://localhost:8080/customers
-- Locations: http://localhost:8080/locations
-- Sales: http://localhost:8080/sales
-- H2 Console: http://localhost:8080/h2-console
-- REST API Base: http://localhost:8080/api
-
-H2 Console login:
-
-- JDBC URL: `jdbc:h2:mem:oltp_sales_db`
-- Username: `sa`
-- Password: leave blank
-
-Stop application: `Ctrl + C`
-
----
-
-## Build and Test
-
-Build package:
-
-```bash
-mvn clean package
+Or simply run:
+```cmd
+.\run-app.bat
 ```
 
-Run tests:
+## Sample Data
 
-```bash
-mvn test
-```
+The application automatically loads sample data on startup:
+- **100 Customers** across different Sri Lankan locations
+- **100 Products** across multiple categories
+- **100 Locations** (retail, outlet, warehouse, and online)
+- **100 Sales Transactions** with various statuses
 
----
+## Web User Interface
 
-## Configuration
+The application provides a modern, user-friendly web interface built with Thymeleaf templates and styled with CSS gradients.
 
-Main config file:
+### Dashboard (/)
+- **Statistics Cards**: Display total products, customers, sales, and locations
+- **Quick Navigation**: Cards linking to each management section
+- **Modern Design**: Purple gradient background with smooth animations
 
-- `src/main/resources/application.properties`
+### Product Management (/products)
+- **Product List**: View all products in a table format
+- **Search Functionality**: Real-time search by product name or SKU
+- **Add New Product**: Form with auto-SKU generation
+- **Edit Product**: Update existing product details
+- **Delete Product**: Remove products with confirmation
+- **Product Details**: View individual product information
+- **Stock Indicators**: Visual badges for low stock warnings
 
-Current important defaults:
+### Customer Management (/customers)
+- **Customer List**: View all customers in a table
+- **Search by Name/Email**: Real-time search functionality
+- **Add New Customer**: Create customer with all details
+- **Edit Customer**: Update customer information
+- **Delete Customer**: Remove customers with confirmation
 
-- `server.port=8080`
-- `spring.datasource.url=jdbc:h2:mem:oltp_sales_db`
-- `spring.jpa.hibernate.ddl-auto=create-drop`
-- H2 console enabled
+### Location Viewer (/locations)
+- **Card Layout**: Display stores in visually appealing cards
+- **Location Details**: Store name, city, state, country, postal code
+- **Clean Design**: Easy to scan location information
 
----
+### Sales Transactions (/sales)
+- **Transaction Table**: View all sales with full details
+- **Summary Cards**: Total transactions and revenue
+- **Revenue Calculation**: Automatic total revenue display
+- **Transaction Details**: Customer, product, quantity, price, location
 
-## Database Schema (OLTP)
-
-### Customer
-
-Main fields:
-
-- `customer_id` (PK)
-- `first_name`, `last_name`
-- `email` (unique/indexed)
-- `phone` (indexed)
-- `customer_status`
-- `created_at`, `updated_at`
-
-### Product
-
-Main fields:
-
-- `product_id` (PK)
-- `sku` (unique/indexed)
-- `product_name`, `description`
-- `category`, `sub_category`
-- `price`, `cost_price`
-- `stock_quantity`, `reorder_level`
-- `product_status`
-
-### Location
-
-Main fields:
-
-- `location_id` (PK)
-- `store_code` (unique/indexed)
-- `store_name`, `location_type`
-- address and contact details
-- `location_status`
-
-### Sales
-
-Main fields:
-
-- `sale_id` (PK)
-- `order_number` (unique)
-- `customer_id`, `product_id`, `location_id` (FK)
-- `quantity`, `unit_price`, `subtotal`, `total_amount`
-- `payment_status`, `order_status`
-- `sale_date`, `delivery_date`
-
----
-
-## OLTP Design Principles
-
-- Normalization (3NF)
-- Primary and secondary indexing
-- Foreign key constraints for integrity
-- ACID transactions via Spring + JPA
-- Audit timestamps (`created_at`, `updated_at`)
-
----
+### Features
+- ✅ **Responsive Design**: Works on desktop and mobile
+- ✅ **Modern UI**: Gradient backgrounds and smooth transitions
+- ✅ **Real-time Search**: Instant filtering on products and customers
+- ✅ **Form Validation**: Required field validation
+- ✅ **Auto-SKU Generation**: Automatically creates SKU codes
+- ✅ **Stock Status Badges**: Visual indicators for inventory levels
+- ✅ **Confirmation Dialogs**: Prevents accidental deletions
 
 ## REST API Endpoints
 
 ### Customers
-
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/customers` | Get all customers |
 | GET | `/api/customers/{id}` | Get customer by ID |
-| GET | `/api/customers/email/{email}` | Get customer by email |
-| GET | `/api/customers/status/{status}` | Get customers by status |
-| POST | `/api/customers` | Create customer |
+| POST | `/api/customers` | Create new customer |
 | PUT | `/api/customers/{id}` | Update customer |
 | DELETE | `/api/customers/{id}` | Delete customer |
 
 ### Products
-
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/products` | Get all products |
 | GET | `/api/products/{id}` | Get product by ID |
-| GET | `/api/products/sku/{sku}` | Get product by SKU |
-| GET | `/api/products/category/{category}` | Get products by category |
-| GET | `/api/products/reorder` | Get products needing reorder |
-| POST | `/api/products` | Create product |
+| POST | `/api/products` | Create new product |
+| PUT | `/api/products/{id}` | Update product |
+| PUT | `/api/products/{id}/stock?quantity=X` | Update stock quantity |
 | DELETE | `/api/products/{id}` | Delete product |
 
 ### Locations
-
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/locations` | Get all locations |
 | GET | `/api/locations/{id}` | Get location by ID |
-| GET | `/api/locations/store-code/{storeCode}` | Get location by store code |
-| GET | `/api/locations/type/{type}` | Get locations by type |
-| GET | `/api/locations/active` | Get active locations |
-| POST | `/api/locations` | Create location |
+| POST | `/api/locations` | Create new location |
+| PUT | `/api/locations/{id}` | Update location |
 | DELETE | `/api/locations/{id}` | Delete location |
 
 ### Sales
-
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/sales` | Get all sales |
 | GET | `/api/sales/{id}` | Get sale by ID |
-| GET | `/api/sales/customer/{customerId}` | Get sales by customer |
-| GET | `/api/sales/date-range` | Get sales by date range |
-| GET | `/api/sales/product-location` | Get sales by product + location + date range |
-| GET | `/api/sales/analytics/product-location` | Get sales analytics by product + location + date range |
-| GET | `/api/sales/revenue` | Get revenue in date range |
-| POST | `/api/sales` | Create sale |
+| GET | `/api/sales/date-range?startDate=...&endDate=...` | Get sales by date range |
+| GET | `/api/sales/product-location?productId=...&locationId=...&startDate=...&endDate=...` | Get sales for a product in a location over a period |
+| GET | `/api/sales/analytics/product-location?productId=...&locationId=...&startDate=...&endDate=...` | Get analytics (totals + maximum sales stats) for that filter |
+| POST | `/api/sales` | Create new sale |
+| PUT | `/api/sales/{id}` | Update sale |
 | DELETE | `/api/sales/{id}` | Delete sale |
 
-### Benchmark
-
+### Benchmark and Phase 2 (Dimensional Model)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/benchmark/warehouse/rebuild` | Rebuild dimensional tables from OLTP data |
-| GET | `/api/benchmark/sales-compare` | Compare OLTP vs dimensional query performance |
+| POST | `/api/benchmark/warehouse/rebuild` | Rebuilds dimension and fact tables from OLTP data |
+| GET | `/api/benchmark/sales-compare?productId=...&locationId=...&startDate=...&endDate=...&runs=20` | Compares query performance of OLTP vs dimensional model |
 
----
+### Example API Usage
 
-## Example API Usage
-
-Get all customers:
-
+**Get all customers:**
 ```bash
 curl http://localhost:8080/api/customers
 ```
 
-Get products needing reorder:
+**Create a new customer:**
+```bash
+curl -X POST http://localhost:8080/api/customers \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "555-1234",
+    "customerStatus": "ACTIVE"
+  }'
+```
+| `GET /api/customers/email/{email}` | Customer by email |
+| `GET /api/products` | All products |
+| `GET /api/products/sku/{sku}` | Product by SKU |
+| `GET /api/products/category/{category}` | Products by category |
+| `GET /api/products/reorder` | Products needing restock |
+| `GET /api/locations` | All locations |
+| `GET /api/locations/active` | Active locations |
+| `GET /api/sales` | All sales |
+| `GET /api/sales/customer/{id}` | Sales by customer |
+| `GET /api/sales/product-location?...` | Sales by product + location + date range |
+| `GET /api/sales/analytics/product-location?...` | Max/total sales analytics for product + location + date range |
+| `POST /api/*` | Create new record |
+
+## Example API Usage
 
 ```bash
+# Get all customers
+curl http://localhost:8080/api/customers
+
+# Get products needing reorder
 curl http://localhost:8080/api/products/reorder
 ```
 
-Run benchmark comparison:
+## Switching to MySQL/PostgreSQL
 
-```bash
-curl "http://localhost:8080/api/benchmark/sales-compare?productId=1&locationId=1&startDate=2026-03-01T00:00:00&endDate=2026-03-31T23:59:59&runs=30"
-```
+Update `application.properties`:
 
----
-
-## Dimensional Model (Phase 2)
-
-Analytics model includes:
-
-- `dim_product`
-- `dim_location`
-- `dim_date`
-- `fact_sales`
-
-Warehouse data can be rebuilt from OLTP using benchmark rebuild API.
-
----
-
-## Switching to MySQL or PostgreSQL
-
-Update datasource settings in `application.properties` and add the relevant JDBC driver in `pom.xml`.
-
-MySQL example:
-
+**MySQL:**
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/oltp_sales_db
 spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
 ```
 
-PostgreSQL example:
-
+**PostgreSQL:**
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/oltp_sales_db
 spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 ```
 
----
+Add respective database driver to `pom.xml`.
 
-## Project Structure
+## OLTP Features
 
-```text
-src/main/java/com/oltp/
-  config/       startup config and data loading
-  controller/   web and REST controllers
-  dto/          API request/response models
-  entity/       OLTP entities + dimensional entities
-  repository/   Spring Data JPA repositories
-  service/      business logic and query processing
+- ✅ **Normalized to 3NF** - Eliminates data redundancy
+- ✅ **Strategic Indexing** - Fast lookups on email, SKU, dates, status
+- ✅ **Foreign Key Constraints** - Referential integrity
+- ✅ **ACID Transactions** - Guaranteed consistency
+- ✅ **Audit Timestamps** - created_at/updated_at on all tables
+- ✅ **Real-time Processing** - Immediate stock updates
 
-src/main/resources/
-  templates/    Thymeleaf HTML templates
-  static/css/   CSS assets
-  application.properties
+See [OLTP_DESIGN.md](OLTP_DESIGN.md) for detailed design documentation.
+
+## Phase 2: Dimensional Model (Fact + Dimensions)
+
+This project now includes a simple star schema for analytics:
+- `dim_product`
+- `dim_location`
+- `dim_date`
+- `fact_sales`
+
+These are populated automatically from OLTP tables at startup.
+
+Use this API to compare query performance between models:
+
+```bash
+curl "http://localhost:8080/api/benchmark/sales-compare?productId=1&locationId=1&startDate=2026-03-01T00:00:00&endDate=2026-03-31T23:59:59&runs=30"
 ```
 
----
-
-## Sample Data
-
-On startup, sample Sri Lankan-context data is loaded for demo/testing:
-
-- customers
-- products
-- locations
-- sales records
+Response includes:
+- aggregated result (quantity, revenue, transaction count)
+- average execution time for OLTP query
+- average execution time for dimensional query
+- dimensional improvement percentage
 
 ---
 
-## Troubleshooting
-
-1. Java version issue:
-- Ensure `java -version` shows Java 21
-
-2. Maven issue:
-- Ensure `mvn -version` works and is Maven 3.9+
-
-3. Port conflict:
-- Change `server.port` in `application.properties`
-
-4. H2 login issue:
-- Use URL `jdbc:h2:mem:oltp_sales_db`, user `sa`, blank password
-
----
-
-## Additional Documentation
-
-- `OLTP_DESIGN.md` for detailed OLTP design
-- `ER_DIAGRAM.md` for entity relationships
-- Folder-level README files inside `src/` for quick navigation
-
----
-
-## License
-
-Educational purpose project.
+**License:** Educational purposes
