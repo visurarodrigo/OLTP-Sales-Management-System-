@@ -14,4 +14,11 @@ This file tracks the project phases.
 	- Dimension model is created.
 	- Comparison is done against the normal OLTP version.
 
-No more phases yet.
+## Phase 3
+- Name: Introduce data warehouse architecture (staging + star schema + sales datamart)
+- Status: In Progress
+- Notes:
+	- Added staging table for sales extraction (`stage_sales`).
+	- Rebuild pipeline now flows as OLTP -> Staging -> Star Schema (`dim_*`, `fact_sales`).
+	- Added daily sales datamart aggregate table (`sales_datamart_daily`).
+	- Added Phase 3 API endpoints to run each pipeline step independently.

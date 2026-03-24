@@ -6,7 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.WeekFields;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +27,39 @@ public class WarehouseService {
     private final DimLocationRepository dimLocationRepository;
     private final DimDateRepository dimDateRepository;
     private final FactSalesRepository factSalesRepository;
+    private final StageSalesRepository stageSalesRepository;
+    private final SalesDatamartDailyRepository salesDatamartDailyRepository;
 
     @Transactional
     public void rebuildWarehouse() {
+        loadSalesToStaging();
+        rebuildStarSchemaFromStaging();
+        refreshSalesDatamart();
+    }
+
+    @Transactional
+    public void loadSalesToStaging() {
+        stageSalesRepository.deleteAllInBatch();
+
+        List<Sales> sales = salesRepository.findAll();
+        LocalDateTime loadedAt = LocalDateTime.now();
+        for (Sales sale : sales) {
+            StageSales stageSales = new StageSales();
+            stageSales.setSourceSaleId(sale.getSaleId());
+            stageSales.setSourceCustomerId(sale.getCustomer().getCustomerId());
+            stageSales.setSourceProductId(sale.getProduct().getProductId());
+            stageSales.setSourceLocationId(sale.getLocation().getLocationId());
+            stageSales.setSaleDate(sale.getSaleDate());
+            stageSales.setSaleDay(sale.getSaleDate().toLocalDate());
+            stageSales.setQuantity(sale.getQuantity());
+            stageSales.setTotalAmount(sale.getTotalAmount());
+            stageSales.setLoadedAt(loadedAt);
+            stageSalesRepository.save(stageSales);
+        }
+    }
+
+    @Transactional
+    public void rebuildStarSchemaFromStaging() {
         factSalesRepository.deleteAllInBatch();
         dimDateRepository.deleteAllInBatch();
         dimProductRepository.deleteAllInBatch();
@@ -60,9 +92,9 @@ public class WarehouseService {
 
         WeekFields weekFields = WeekFields.of(Locale.US);
         Map<LocalDate, DimDate> dimDateMap = new HashMap<>();
-        List<Sales> sales = salesRepository.findAll();
-        for (Sales sale : sales) {
-            LocalDate date = sale.getSaleDate().toLocalDate();
+        List<StageSales> stagedSales = stageSalesRepository.findAll();
+        for (StageSales stagedSale : stagedSales) {
+            LocalDate date = stagedSale.getSaleDay();
             DimDate dimDate = dimDateMap.get(date);
             if (dimDate == null) {
                 dimDate = new DimDate();
@@ -77,14 +109,55 @@ public class WarehouseService {
             }
 
             FactSales factSales = new FactSales();
-            factSales.setSourceSaleId(sale.getSaleId());
-            factSales.setDimProduct(dimProductMap.get(sale.getProduct().getProductId()));
-            factSales.setDimLocation(dimLocationMap.get(sale.getLocation().getLocationId()));
+            factSales.setSourceSaleId(stagedSale.getSourceSaleId());
+            factSales.setDimProduct(dimProductMap.get(stagedSale.getSourceProductId()));
+            factSales.setDimLocation(dimLocationMap.get(stagedSale.getSourceLocationId()));
             factSales.setDimDate(dimDate);
-            factSales.setQuantity(sale.getQuantity());
-            factSales.setTotalAmount(sale.getTotalAmount());
+            factSales.setQuantity(stagedSale.getQuantity());
+            factSales.setTotalAmount(stagedSale.getTotalAmount());
             factSales.setTransactionCount(1);
             factSalesRepository.save(factSales);
         }
+    }
+
+    @Transactional
+    public void refreshSalesDatamart() {
+        salesDatamartDailyRepository.deleteAllInBatch();
+
+        List<FactSales> factRows = factSalesRepository.findAll();
+        Map<String, SalesDatamartDaily> martByKey = new HashMap<>();
+
+        for (FactSales fact : factRows) {
+            DimDate dimDate = fact.getDimDate();
+            DimProduct dimProduct = fact.getDimProduct();
+            DimLocation dimLocation = fact.getDimLocation();
+
+            String key = dimDate.getFullDate() + "|" + dimProduct.getSourceProductId() + "|" + dimLocation.getSourceLocationId();
+            SalesDatamartDaily row = martByKey.computeIfAbsent(key, ignored -> {
+                SalesDatamartDaily mart = new SalesDatamartDaily();
+                mart.setSaleDate(dimDate.getFullDate());
+                mart.setSourceProductId(dimProduct.getSourceProductId());
+                mart.setProductName(dimProduct.getProductName());
+                mart.setCategory(dimProduct.getCategory());
+                mart.setSourceLocationId(dimLocation.getSourceLocationId());
+                mart.setStoreName(dimLocation.getStoreName());
+                mart.setCity(dimLocation.getCity());
+                mart.setState(dimLocation.getState());
+                mart.setTotalQuantity(0L);
+                mart.setTotalRevenue(BigDecimal.ZERO);
+                mart.setTotalTransactions(0L);
+                return mart;
+            });
+
+            long quantity = fact.getQuantity() == null ? 0L : fact.getQuantity();
+            BigDecimal revenue = fact.getTotalAmount() == null ? BigDecimal.ZERO : fact.getTotalAmount();
+            long transactions = fact.getTransactionCount() == null ? 0L : fact.getTransactionCount();
+
+            row.setTotalQuantity(row.getTotalQuantity() + quantity);
+            row.setTotalRevenue(row.getTotalRevenue().add(revenue));
+            row.setTotalTransactions(row.getTotalTransactions() + transactions);
+        }
+
+        salesDatamartDailyRepository.saveAll(martByKey.values());
     }
 }

@@ -18,10 +18,28 @@ public class BenchmarkController {
     private final QueryPerformanceService queryPerformanceService;
     private final WarehouseService warehouseService;
 
-    @PostMapping("/warehouse/rebuild")
+    @RequestMapping(value = "/warehouse/rebuild", method = {RequestMethod.POST, RequestMethod.GET})
     public ResponseEntity<String> rebuildWarehouse() {
         warehouseService.rebuildWarehouse();
-        return ResponseEntity.ok("Warehouse tables rebuilt from OLTP data.");
+        return ResponseEntity.ok("Phase 3 pipeline completed: staging loaded, star schema rebuilt, datamart refreshed.");
+    }
+
+    @PostMapping("/warehouse/staging/load")
+    public ResponseEntity<String> loadWarehouseStaging() {
+        warehouseService.loadSalesToStaging();
+        return ResponseEntity.ok("Staging area loaded from OLTP sales.");
+    }
+
+    @PostMapping("/warehouse/star/rebuild")
+    public ResponseEntity<String> rebuildWarehouseStarSchema() {
+        warehouseService.rebuildStarSchemaFromStaging();
+        return ResponseEntity.ok("Star schema rebuilt from staging area.");
+    }
+
+    @PostMapping("/warehouse/datamart/refresh")
+    public ResponseEntity<String> refreshSalesDatamart() {
+        warehouseService.refreshSalesDatamart();
+        return ResponseEntity.ok("Sales datamart refreshed from fact table.");
     }
 
     @GetMapping("/sales-compare")
