@@ -1,5 +1,8 @@
 package com.oltp.service;
 
+import com.oltp.dto.SalesRankingRow;
+import com.oltp.dto.WarehousePipelineStatusResponse;
+import com.oltp.dto.WarehouseReconciliationResponse;
 import com.oltp.entity.*;
 import com.oltp.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -9,11 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.WeekFields;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -160,4 +166,142 @@ public class WarehouseService {
 
         salesDatamartDailyRepository.saveAll(martByKey.values());
     }
+
+        @Transactional(readOnly = true)
+        public WarehousePipelineStatusResponse getPipelineStatus() {
+        LocalDateTime lastLoadedAt = stageSalesRepository.findTopByOrderByLoadedAtDesc()
+            .map(StageSales::getLoadedAt)
+            .orElse(null);
+
+        return WarehousePipelineStatusResponse.builder()
+            .stagingRows(stageSalesRepository.count())
+            .dimProductRows(dimProductRepository.count())
+            .dimLocationRows(dimLocationRepository.count())
+            .dimDateRows(dimDateRepository.count())
+            .factRows(factSalesRepository.count())
+            .datamartRows(salesDatamartDailyRepository.count())
+            .lastStagingLoadedAt(lastLoadedAt)
+            .build();
+        }
+
+        @Transactional(readOnly = true)
+        public WarehouseReconciliationResponse reconcile(LocalDate startDate, LocalDate endDate) {
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+
+        List<Sales> oltpRows = salesRepository.findBySaleDateBetween(startDateTime, endDateTime);
+        List<FactSales> factRows = factSalesRepository.findByDimDate_FullDateBetween(startDate, endDate);
+        List<SalesDatamartDaily> datamartRows = salesDatamartDailyRepository.findBySaleDateBetween(startDate, endDate);
+
+        long oltpQuantity = oltpRows.stream().map(Sales::getQuantity).filter(q -> q != null).mapToLong(Integer::longValue).sum();
+        BigDecimal oltpRevenue = oltpRows.stream().map(Sales::getTotalAmount).filter(v -> v != null).reduce(BigDecimal.ZERO, BigDecimal::add);
+        long oltpTransactions = oltpRows.size();
+
+        long factQuantity = factRows.stream().map(FactSales::getQuantity).filter(q -> q != null).mapToLong(Integer::longValue).sum();
+        BigDecimal factRevenue = factRows.stream().map(FactSales::getTotalAmount).filter(v -> v != null).reduce(BigDecimal.ZERO, BigDecimal::add);
+        long factTransactions = factRows.stream().map(FactSales::getTransactionCount).filter(t -> t != null).mapToLong(Integer::longValue).sum();
+
+        long datamartQuantity = datamartRows.stream().map(SalesDatamartDaily::getTotalQuantity).filter(q -> q != null).mapToLong(Long::longValue).sum();
+        BigDecimal datamartRevenue = datamartRows.stream().map(SalesDatamartDaily::getTotalRevenue).filter(v -> v != null).reduce(BigDecimal.ZERO, BigDecimal::add);
+        long datamartTransactions = datamartRows.stream().map(SalesDatamartDaily::getTotalTransactions).filter(t -> t != null).mapToLong(Long::longValue).sum();
+
+        return WarehouseReconciliationResponse.builder()
+            .startDate(startDate)
+            .endDate(endDate)
+            .oltpQuantity(oltpQuantity)
+            .oltpRevenue(oltpRevenue)
+            .oltpTransactions(oltpTransactions)
+            .factQuantity(factQuantity)
+            .factRevenue(factRevenue)
+            .factTransactions(factTransactions)
+            .datamartQuantity(datamartQuantity)
+            .datamartRevenue(datamartRevenue)
+            .datamartTransactions(datamartTransactions)
+            .quantityBalanced(oltpQuantity == factQuantity && factQuantity == datamartQuantity)
+            .revenueBalanced(oltpRevenue.compareTo(factRevenue) == 0 && factRevenue.compareTo(datamartRevenue) == 0)
+            .transactionBalanced(oltpTransactions == factTransactions && factTransactions == datamartTransactions)
+            .build();
+        }
+
+        @Transactional(readOnly = true)
+        public List<SalesDatamartDaily> getDatamartDaily(LocalDate startDate,
+                                 LocalDate endDate,
+                                 Long productId,
+                                 Long locationId) {
+        if (productId != null && locationId != null) {
+            return salesDatamartDailyRepository.findBySaleDateBetweenAndSourceProductIdAndSourceLocationId(
+                startDate,
+                endDate,
+                productId,
+                locationId
+            );
+        }
+        if (productId != null) {
+            return salesDatamartDailyRepository.findBySaleDateBetweenAndSourceProductId(startDate, endDate, productId);
+        }
+        if (locationId != null) {
+            return salesDatamartDailyRepository.findBySaleDateBetweenAndSourceLocationId(startDate, endDate, locationId);
+        }
+        return salesDatamartDailyRepository.findBySaleDateBetween(startDate, endDate);
+        }
+
+        @Transactional(readOnly = true)
+        public List<SalesRankingRow> getTopProducts(LocalDate startDate, LocalDate endDate, Integer limit) {
+        int topN = (limit == null || limit < 1) ? 10 : limit;
+        return salesDatamartDailyRepository.findBySaleDateBetween(startDate, endDate)
+            .stream()
+            .collect(Collectors.groupingBy(
+                row -> row.getSourceProductId() + " - " + row.getProductName(),
+                Collectors.reducing(
+                    SalesRankingRow.builder().label("").quantity(0).transactions(0).revenue(BigDecimal.ZERO).build(),
+                    row -> SalesRankingRow.builder()
+                        .label(row.getSourceProductId() + " - " + row.getProductName())
+                        .quantity(row.getTotalQuantity() == null ? 0 : row.getTotalQuantity())
+                        .transactions(row.getTotalTransactions() == null ? 0 : row.getTotalTransactions())
+                        .revenue(row.getTotalRevenue() == null ? BigDecimal.ZERO : row.getTotalRevenue())
+                        .build(),
+                    (a, b) -> SalesRankingRow.builder()
+                        .label(a.getLabel().isEmpty() ? b.getLabel() : a.getLabel())
+                        .quantity(a.getQuantity() + b.getQuantity())
+                        .transactions(a.getTransactions() + b.getTransactions())
+                        .revenue(a.getRevenue().add(b.getRevenue()))
+                        .build()
+                )
+            ))
+            .values()
+            .stream()
+            .sorted(Comparator.comparing(SalesRankingRow::getRevenue).reversed())
+            .limit(topN)
+            .collect(Collectors.toList());
+        }
+
+        @Transactional(readOnly = true)
+        public List<SalesRankingRow> getTopLocations(LocalDate startDate, LocalDate endDate, Integer limit) {
+        int topN = (limit == null || limit < 1) ? 10 : limit;
+        return salesDatamartDailyRepository.findBySaleDateBetween(startDate, endDate)
+            .stream()
+            .collect(Collectors.groupingBy(
+                row -> row.getSourceLocationId() + " - " + row.getStoreName() + " (" + row.getCity() + ")",
+                Collectors.reducing(
+                    SalesRankingRow.builder().label("").quantity(0).transactions(0).revenue(BigDecimal.ZERO).build(),
+                    row -> SalesRankingRow.builder()
+                        .label(row.getSourceLocationId() + " - " + row.getStoreName() + " (" + row.getCity() + ")")
+                        .quantity(row.getTotalQuantity() == null ? 0 : row.getTotalQuantity())
+                        .transactions(row.getTotalTransactions() == null ? 0 : row.getTotalTransactions())
+                        .revenue(row.getTotalRevenue() == null ? BigDecimal.ZERO : row.getTotalRevenue())
+                        .build(),
+                    (a, b) -> SalesRankingRow.builder()
+                        .label(a.getLabel().isEmpty() ? b.getLabel() : a.getLabel())
+                        .quantity(a.getQuantity() + b.getQuantity())
+                        .transactions(a.getTransactions() + b.getTransactions())
+                        .revenue(a.getRevenue().add(b.getRevenue()))
+                        .build()
+                )
+            ))
+            .values()
+            .stream()
+            .sorted(Comparator.comparing(SalesRankingRow::getRevenue).reversed())
+            .limit(topN)
+            .collect(Collectors.toList());
+        }
 }

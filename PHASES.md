@@ -22,3 +22,6 @@ This file tracks the project phases.
 	- Rebuild pipeline now flows as OLTP -> Staging -> Star Schema (`dim_*`, `fact_sales`).
 	- Added daily sales datamart aggregate table (`sales_datamart_daily`).
 	- Added Phase 3 API endpoints to run each pipeline step independently.
+	- Added pipeline status API for row counts and latest staging load timestamp.
+	- Added reconciliation API to compare OLTP vs fact vs datamart totals by date range.
+	- Added datamart analytics APIs for daily rows, top products, and top locations.

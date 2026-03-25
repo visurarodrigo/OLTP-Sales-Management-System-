@@ -12,6 +12,8 @@ import java.util.List;
 @Repository
 public interface FactSalesRepository extends JpaRepository<FactSales, Long> {
 
+        List<FactSales> findByDimDate_FullDateBetween(LocalDate startDate, LocalDate endDate);
+
         List<FactSales> findByDimProduct_SourceProductIdAndDimLocation_SourceLocationIdAndDimDate_FullDateBetween(
                         Long productId,
                         Long locationId,
