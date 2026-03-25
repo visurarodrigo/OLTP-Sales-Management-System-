@@ -24,6 +24,8 @@ public interface SalesRepository extends JpaRepository<Sales, Long> {
     
     List<Sales> findBySaleDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 
+        List<Sales> findByUpdatedAtAfterOrderByUpdatedAtAsc(LocalDateTime updatedAt);
+
     List<Sales> findByProduct_ProductIdAndLocation_LocationIdAndSaleDateBetween(
             Long productId,
             Long locationId,

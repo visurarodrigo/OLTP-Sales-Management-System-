@@ -20,4 +20,5 @@ public class WarehousePipelineStatusResponse {
     private long factRows;
     private long datamartRows;
     private LocalDateTime lastStagingLoadedAt;
+    private LocalDateTime lastSuccessfulSourceUpdateAt;
 }

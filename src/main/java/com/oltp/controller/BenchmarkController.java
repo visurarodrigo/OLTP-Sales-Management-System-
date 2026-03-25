@@ -30,6 +30,15 @@ public class BenchmarkController {
         return ResponseEntity.ok("Phase 3 pipeline completed: staging loaded, star schema rebuilt, datamart refreshed.");
     }
 
+    @RequestMapping(value = "/warehouse/incremental/run", method = {RequestMethod.POST, RequestMethod.GET})
+    public ResponseEntity<String> runIncrementalPipeline() {
+        long changedRows = warehouseService.runIncrementalWarehousePipeline();
+        if (changedRows == 0) {
+            return ResponseEntity.ok("Incremental pipeline executed: no OLTP changes detected since last watermark.");
+        }
+        return ResponseEntity.ok("Incremental pipeline completed: " + changedRows + " changed sales row(s) processed.");
+    }
+
     @PostMapping("/warehouse/staging/load")
     public ResponseEntity<String> loadWarehouseStaging() {
         warehouseService.loadSalesToStaging();

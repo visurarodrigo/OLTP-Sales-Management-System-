@@ -16,7 +16,7 @@ This file tracks the project phases.
 
 ## Phase 3
 - Name: Introduce data warehouse architecture (staging + star schema + sales datamart)
-- Status: In Progress
+- Status: Completed
 - Notes:
 	- Added staging table for sales extraction (`stage_sales`).
 	- Rebuild pipeline now flows as OLTP -> Staging -> Star Schema (`dim_*`, `fact_sales`).
@@ -25,3 +25,5 @@ This file tracks the project phases.
 	- Added pipeline status API for row counts and latest staging load timestamp.
 	- Added reconciliation API to compare OLTP vs fact vs datamart totals by date range.
 	- Added datamart analytics APIs for daily rows, top products, and top locations.
+	- Added watermark-based incremental pipeline run from OLTP updates to staging.
+	- Added persistent pipeline state table for latest successful source update timestamp.

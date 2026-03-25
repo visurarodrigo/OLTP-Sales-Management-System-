@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface StageSalesRepository extends JpaRepository<StageSales, Long> {
 
 	Optional<StageSales> findTopByOrderByLoadedAtDesc();
+
+	Optional<StageSales> findBySourceSaleId(Long sourceSaleId);
 }

@@ -1016,39 +1016,51 @@ DELETE /api/sales/{id}
 
 ### Benchmark Endpoints
 
-These endpoints compare OLTP vs Data Warehouse performance.
+These endpoints support full Phase 3 warehouse operations.
 
-**Rebuild the data warehouse:**
+**Pipeline execution:**
 ```
-POST /api/benchmark/warehouse/rebuild
+GET or POST /api/benchmark/warehouse/rebuild
 ```
-Re-syncs dimension and fact tables from OLTP data
+Runs full pipeline (OLTP -> staging -> star schema -> datamart).
 
-**Compare OLTP vs Dimensional Model:**
+```
+GET or POST /api/benchmark/warehouse/incremental/run
+```
+Runs incremental extraction from OLTP changes using watermark and refreshes downstream tables.
+
+**Step-by-step pipeline operations:**
+```
+POST /api/benchmark/warehouse/staging/load
+POST /api/benchmark/warehouse/star/rebuild
+POST /api/benchmark/warehouse/datamart/refresh
+```
+
+**Pipeline monitoring and quality checks:**
+```
+GET /api/benchmark/warehouse/status
+GET /api/benchmark/warehouse/reconcile?startDate=2026-03-01&endDate=2026-03-31
+```
+
+**Datamart analytics endpoints:**
+```
+GET /api/benchmark/datamart/daily?startDate=2026-03-01&endDate=2026-03-31
+GET /api/benchmark/datamart/daily?startDate=2026-03-01&endDate=2026-03-31&productId=1&locationId=1
+GET /api/benchmark/datamart/top-products?startDate=2026-03-01&endDate=2026-03-31&limit=10
+GET /api/benchmark/datamart/top-locations?startDate=2026-03-01&endDate=2026-03-31&limit=10
+```
+
+**Performance comparison endpoint:**
 ```
 GET /api/benchmark/sales-compare?productId=1&locationId=1&startDate=2026-03-01T00:00:00&endDate=2026-03-31T23:59:59&runs=30
 ```
 
 Parameters:
-- `productId` - Which product to query
-- `locationId` - Which location to query
-- `startDate` - Start of date range (ISO format)
-- `endDate` - End of date range (ISO format)
-- `runs` - How many times to run each query (for averaging)
-
-Returns:
-```json
-{
-  "result": {
-    "totalQuantity": 50,
-    "totalRevenue": 2250000,
-    "transactionCount": 5
-  },
-  "oltpAvgTime": 15.5,
-  "dimensionalAvgTime": 8.2,
-  "improvementPercentage": 47.1
-}
-```
+- `productId` - Product to compare
+- `locationId` - Location to compare
+- `startDate` - Start of date range
+- `endDate` - End of date range
+- `runs` - Number of benchmark runs for averaging
 
 ---
 
