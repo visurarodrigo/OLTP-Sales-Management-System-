@@ -33,7 +33,7 @@ The **OLTP Sales Management System** is a complete Spring Boot application that 
 10. [REST API Endpoints](#rest-api-endpoints)
 11. [Sample Data](#sample-data)
 12. [OLTP Design Principles](#oltp-design-principles)
-13. [Dimensional Model (Phase 2)](#phase-2-dimensional-model)
+13. [Dimensional Model & Warehouse Pipeline (Phase 2 & 3)](#phase-2--phase-3-dimensional-model-and-warehouse-pipeline)
 14. [Configuration & Troubleshooting](#configuration--troubleshooting)
 
 ---
@@ -73,6 +73,16 @@ A complete API for developers to integrate with the system:
 - Date range queries
 - Product-location sales analytics
 - Performance comparison between OLTP and data warehouse models
+
+### 🏗️ Phase 3 Data Warehouse Pipeline
+
+Phase 3 introduces a complete warehouse architecture on top of OLTP:
+
+- Staging extraction table (`stage_sales`)
+- Star schema (`dim_product`, `dim_location`, `dim_date`, `fact_sales`)
+- Sales datamart (`sales_datamart_daily`)
+- Reconciliation and status monitoring endpoints
+- Watermark-based incremental refresh (`warehouse_pipeline_state`)
 
 ---
 
@@ -318,33 +328,42 @@ OLTP-Sales-Management-System/
 │   │   ├── Product.java                   ← Product entity
 │   │   ├── Location.java                  ← Store location entity
 │   │   ├── Sales.java                     ← Sales transaction entity
+│   │   ├── StageSales.java                ← Staging sales extraction table
 │   │   ├── DimProduct.java                ← Data warehouse product dimension
 │   │   ├── DimLocation.java               ← Data warehouse location dimension
 │   │   ├── DimDate.java                   ← Data warehouse date dimension
-│   │   └── FactSales.java                 ← Data warehouse sales facts
+│   │   ├── FactSales.java                 ← Data warehouse sales facts
+│   │   ├── SalesDatamartDaily.java        ← Daily sales datamart table
+│   │   └── WarehousePipelineState.java    ← Incremental watermark state
 │   │
 │   ├── repository/                        ← Database queries
 │   │   ├── CustomerRepository.java        ← Query customer data
 │   │   ├── ProductRepository.java         ← Query product data
 │   │   ├── LocationRepository.java        ← Query location data
 │   │   ├── SalesRepository.java           ← Query sales data
+│   │   ├── StageSalesRepository.java      ← Query staging sales
 │   │   ├── DimProductRepository.java      ← Query product dimension
 │   │   ├── DimLocationRepository.java     ← Query location dimension
 │   │   ├── DimDateRepository.java         ← Query date dimension
-│   │   └── FactSalesRepository.java       ← Query sales facts
+│   │   ├── FactSalesRepository.java       ← Query sales facts
+│   │   ├── SalesDatamartDailyRepository.java ← Query datamart rows
+│   │   └── WarehousePipelineStateRepository.java ← Query incremental watermark
 │   │
 │   ├── service/                           ← Business logic
 │   │   ├── CustomerService.java           ← Customer operations
 │   │   ├── ProductService.java            ← Product operations
 │   │   ├── LocationService.java           ← Location operations
 │   │   ├── SalesService.java              ← Sales operations
-│   │   └── BenchmarkService.java          ← Performance testing
+│   │   ├── QueryPerformanceService.java   ← OLTP vs dimensional benchmark logic
+│   │   └── WarehouseService.java          ← Phase 3 pipeline and datamart logic
 │   │
 │   └── dto/                               ← Data transfer objects
 │       ├── QueryPerformanceComparisonResponse.java
 │       ├── ProductLocationSalesAnalytics.java
 │       ├── AggregateSalesResult.java
-│       └── QueryModelPerformance.java
+│       ├── QueryModelPerformance.java
+│       ├── WarehousePipelineStatusResponse.java
+│       └── WarehouseReconciliationResponse.java
 │
 ├── src/main/resources/
 │   ├── application.properties              ← App configuration (DB, port, etc)
@@ -576,12 +595,22 @@ Date: 2026-03-23 14:30:00
 
 ### Dimensional Model Tables (Data Warehouse)
 
-For performance analysis, we also have data warehouse tables:
+For Phase 2 and Phase 3 analysis, the project includes these warehouse layers:
+
+**`stage_sales`** - Staging extraction layer
+- Raw sales facts extracted from OLTP
+- Supports controlled ETL flow and incremental sync
 
 **`dim_product`** - Product dimension (slowly changing)
 **`dim_location`** - Location dimension (slowly changing)
 **`dim_date`** - Date dimension (all dates for fast date queries)
 **`fact_sales`** - Sales facts (optimized for queries)
+
+**`sales_datamart_daily`** - Daily aggregated sales datamart
+- Fast read model for analytics endpoints
+
+**`warehouse_pipeline_state`** - Incremental pipeline watermark
+- Stores latest successful source update timestamp
 
 These are auto-populated from OLTP tables and used for analytics.
 
@@ -1399,9 +1428,12 @@ Check:
 
 ---
 
-## Phase 2: Dimensional Model
+## Phase 2 & Phase 3: Dimensional Model and Warehouse Pipeline
 
-This project demonstrates both OLTP (operational) and Data Warehouse (dimensional/analytical) designs.
+This project now includes both:
+
+- **Phase 2**: Dimensional model for OLTP vs warehouse comparison
+- **Phase 3**: Full warehouse pipeline (staging + star schema + datamart + incremental sync)
 
 ### What's the Difference?
 
@@ -1417,7 +1449,17 @@ This project demonstrates both OLTP (operational) and Data Warehouse (dimensiona
 - Used for reports and analytics
 - Few large queries
 
-### The Four Dimensional Tables
+### Warehouse Layers
+
+**`stage_sales`** - Staging table
+- Extracted from OLTP sales
+- Used as controlled input for warehouse loads
+
+**`warehouse_pipeline_state`** - Pipeline watermark state
+- Keeps latest successful `updated_at` from OLTP sales
+- Enables incremental refresh without full rebuild
+
+### The Star Schema Tables
 
 **`dim_product`** - Product dimension
 - Product details slowly change
@@ -1439,9 +1481,32 @@ This project demonstrates both OLTP (operational) and Data Warehouse (dimensiona
 - Links to all dimensions
 - Optimized for sum/aggregate queries
 
+### Datamart Table
+
+**`sales_datamart_daily`** - Daily aggregate datamart
+- Pre-aggregated quantity, revenue, transaction counts
+- Used for top products, top locations, daily analytics
+
 ### How to Use
 
-The dimensional model is populated automatically on startup.
+Run full pipeline:
+
+```bash
+http://localhost:8080/api/benchmark/warehouse/rebuild
+```
+
+Run incremental pipeline:
+
+```bash
+http://localhost:8080/api/benchmark/warehouse/incremental/run
+```
+
+Check status and reconciliation:
+
+```bash
+http://localhost:8080/api/benchmark/warehouse/status
+http://localhost:8080/api/benchmark/warehouse/reconcile?startDate=2026-03-01&endDate=2026-03-31
+```
 
 Compare performance:
 ```bash
@@ -1453,22 +1518,39 @@ You'll see:
 - Dimensional model query time
 - Percentage improvement
 
-### Example Response
+### Example Benchmark Response (Current Format)
 
 ```json
 {
-  "result": {
-    "totalQuantity": 50,
-    "totalRevenue": 2250000,
-    "transactionCount": 5
+  "productId": 1,
+  "locationId": 59,
+  "startDate": "2025-01-01T00:00:00",
+  "endDate": "2026-12-31T23:59:59",
+  "oltp": {
+    "model": "OLTP",
+    "runs": 200,
+    "averageMillis": 2.916826,
+    "result": {
+      "totalQuantity": 5,
+      "totalRevenue": 13421.10,
+      "totalTransactions": 1
+    }
   },
-  "oltpAvgTime": 15.5,
-  "dimensionalAvgTime": 8.2,
-  "improvementPercentage": 47.1
+  "dimensional": {
+    "model": "DIMENSIONAL",
+    "runs": 200,
+    "averageMillis": 1.132803,
+    "result": {
+      "totalQuantity": 5,
+      "totalRevenue": 13421.10,
+      "totalTransactions": 1
+    }
+  },
+  "dimensionalImprovementPercent": 61.16
 }
 ```
 
-This means the dimensional model is about 47% faster for this query!
+This means the dimensional model is about 61% faster for this sample query.
 
 ---
 
