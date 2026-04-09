@@ -170,24 +170,33 @@ src/main/resources/
 ### Core OLTP Tables
 
 **Customer** — Stores customer information
+
 ```
 customer_id, first_name, last_name, email (indexed), phone, date_of_birth
 address, city, state, country, postal_code
 customer_status (ACTIVE | INACTIVE | SUSPENDED)
 created_at, updated_at (audit trail)
 ```
-Example: `Ravi Jayaraman | ravi.jayaraman@example.lk | Colombo | ACTIVE`
+
+**Example:** Ravi Jayaraman | ravi.jayaraman@example.lk | Colombo | ACTIVE
+
+---
 
 **Product** — Stores inventory items
+
 ```
 product_id, sku (indexed, auto-generated), product_name, description
 category, sub_category, price (LKR), cost_price (LKR)
 stock_quantity (real-time), reorder_level, product_status
 brand, weight, created_at, updated_at
 ```
-Example: `Samsung 27" Monitor | PROD-2026-001 | 45,000 LKR | 42 units in stock`
+
+**Example:** Samsung 27" Monitor | PROD-2026-001 | 45,000 LKR | 42 units in stock
+
+---
 
 **Location** — Stores store/warehouse locations
+
 ```
 location_id, store_code (indexed), store_name, location_type
 address, city, state, country, postal_code
@@ -195,9 +204,13 @@ phone, email, manager_name, opening_time, closing_time
 store_capacity, location_status (ACTIVE | INACTIVE | UNDER_RENOVATION)
 created_at, updated_at
 ```
-Example: `Colombo Main Store | COL-001 | RETAIL | Manager: Keshan Perera | 09:00-21:00`
+
+**Example:** Colombo Main Store | COL-001 | RETAIL | Manager: Keshan Perera | 09:00-21:00
+
+---
 
 **Sales** — Records all transactions
+
 ```
 sale_id, order_number (unique), customer_id, product_id, location_id
 quantity, unit_price (LKR), subtotal, discount_amount, tax_amount, total_amount
@@ -205,7 +218,8 @@ payment_method (CASH | CREDIT_CARD | DEBIT_CARD | DIGITAL_WALLET)
 payment_status, order_status (COMPLETED | PROCESSING | CANCELLED | RETURNED)
 sale_date (indexed), delivery_date, notes, created_at, updated_at
 ```
-Example: `ORD-2026-00001 | Ravi Jayaraman | Samsung Monitor | 1 × 45,000 LKR | Total: 50,200 LKR | PAID`
+
+**Example:** ORD-2026-00001 | Ravi Jayaraman | Samsung Monitor | 1 × 45,000 LKR | Total: 50,200 LKR | PAID
 
 ### Warehouse Tables (Phase 3)
 
@@ -220,8 +234,6 @@ Example: `ORD-2026-00001 | Ravi Jayaraman | Samsung Monitor | 1 × 45,000 LKR | 
 | **warehouse_pipeline_state** | Watermark tracking for incremental refresh |
 
 ---
-
-## 🛠️ Technology Stack
 
 ## 🛠️ Technology Stack
 
