@@ -280,63 +280,73 @@ The application includes a modern, responsive web UI.
 Base URL: `http://localhost:8080/api`
 
 ### Customer API
-```
-GET    /api/customers                      ← List all
-GET    /api/customers/{id}                 ← Get one
-GET    /api/customers/email/{email}        ← Search by email
-POST   /api/customers                      ← Create
-PUT    /api/customers/{id}                 ← Update
-DELETE /api/customers/{id}                 ← Delete
+
+```bash
+GET    /api/customers                      # List all
+GET    /api/customers/{id}                 # Get one
+GET    /api/customers/email/{email}        # Search by email
+POST   /api/customers                      # Create
+PUT    /api/customers/{id}                 # Update
+DELETE /api/customers/{id}                 # Delete
 ```
 
 ### Product API
-```
-GET    /api/products                       ← List all
-GET    /api/products/{id}                  ← Get one
-GET    /api/products/sku/{sku}             ← Search by SKU
-GET    /api/products/category/{category}   ← Filter by category
-GET    /api/products/reorder               ← Low stock alerts
-POST   /api/products                       ← Create
-PUT    /api/products/{id}                  ← Update
-PUT    /api/products/{id}/stock?quantity={n} ← Update stock
-DELETE /api/products/{id}                  ← Delete
+
+```bash
+GET    /api/products                       # List all
+GET    /api/products/{id}                  # Get one
+GET    /api/products/sku/{sku}             # Search by SKU
+GET    /api/products/category/{category}   # Filter by category
+GET    /api/products/reorder               # Low stock alerts
+POST   /api/products                       # Create
+PUT    /api/products/{id}                  # Update
+PUT    /api/products/{id}/stock?quantity={n} # Update stock
+DELETE /api/products/{id}                  # Delete
 ```
 
 ### Location API
-```
-GET    /api/locations                      ← List all
-GET    /api/locations/{id}                 ← Get one
-GET    /api/locations/active               ← Active stores only
-POST   /api/locations                      ← Create
-PUT    /api/locations/{id}                 ← Update
-DELETE /api/locations/{id}                 ← Delete
+
+```bash
+GET    /api/locations                      # List all
+GET    /api/locations/{id}                 # Get one
+GET    /api/locations/active               # Active stores only
+POST   /api/locations                      # Create
+PUT    /api/locations/{id}                 # Update
+DELETE /api/locations/{id}                 # Delete
 ```
 
 ### Sales API
-```
-GET    /api/sales                          ← List all
-GET    /api/sales/{id}                     ← Get one
-GET    /api/sales/date-range?startDate=...&endDate=...  ← Date range query
+
+```bash
+GET    /api/sales                          # List all
+GET    /api/sales/{id}                     # Get one
+GET    /api/sales/date-range?startDate=...&endDate=...
+       # Date range query
 GET    /api/sales/product-location?productId={id}&locationId={id}&startDate=...&endDate=...
-       ↳ Get transactions for product at location
+       # Get transactions for product at location
 GET    /api/sales/analytics/product-location?productId={id}&locationId={id}&startDate=...&endDate=...
-       ↳ Aggregated analytics (quantity, revenue, count)
-POST   /api/sales                          ← Create sale
-PUT    /api/sales/{id}                     ← Update
-DELETE /api/sales/{id}                     ← Delete
+       # Aggregated analytics (quantity, revenue, count)
+POST   /api/sales                          # Create sale
+PUT    /api/sales/{id}                     # Update
+DELETE /api/sales/{id}                     # Delete
 ```
 
 ### Warehouse & Benchmark API
-```
-GET/POST /api/benchmark/warehouse/rebuild         ← Full ETL pipeline
-GET/POST /api/benchmark/warehouse/incremental/run ← Incremental refresh
-GET      /api/benchmark/warehouse/status          ← Pipeline status
+
+```bash
+GET/POST /api/benchmark/warehouse/rebuild         # Full ETL pipeline
+GET/POST /api/benchmark/warehouse/incremental/run # Incremental refresh
+GET      /api/benchmark/warehouse/status          # Pipeline status
 GET      /api/benchmark/warehouse/reconcile?startDate=...&endDate=...
+         # Validate data integrity
 GET      /api/benchmark/datamart/daily?startDate=...&endDate=...
+         # Daily analytics
 GET      /api/benchmark/datamart/top-products?limit=10
+         # Top selling products
 GET      /api/benchmark/datamart/top-locations?limit=10
+         # Top performing locations
 GET      /api/benchmark/sales-compare?productId={id}&locationId={id}&startDate=...&endDate=...&runs=30
-         ↳ Compare OLTP vs Dimensional performance
+         # Compare OLTP vs Dimensional performance
 ```
 
 **Example Request:**
