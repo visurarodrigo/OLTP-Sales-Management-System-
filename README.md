@@ -1,4 +1,4 @@
-# OLTP Sales Management System
+# OLTP Sales Management System .
 
 A comprehensive Spring Boot application demonstrating high-performance inventory and sales management for real-time operations. Built with Sri Lankan business context featuring products, customers, locations, and transactions in LKR currency.
 
