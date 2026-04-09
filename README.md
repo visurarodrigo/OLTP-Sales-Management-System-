@@ -169,55 +169,86 @@ src/main/resources/
 
 ### Core OLTP Tables
 
-**Customer** — Stores customer information
+#### Customer — Stores customer information
 
-```
-customer_id, first_name, last_name, email (indexed), phone, date_of_birth
-address, city, state, country, postal_code
-customer_status (ACTIVE | INACTIVE | SUSPENDED)
-created_at, updated_at (audit trail)
-```
+| Field | Type | Notes |
+|-------|------|-------|
+| `customer_id` | Integer | Auto-generated primary key |
+| `first_name`, `last_name` | String | Customer name |
+| `email` | String | Indexed for fast search |
+| `phone` | String | Contact number |
+| `date_of_birth` | Date | Demographics |
+| `address`, `city`, `state`, `country`, `postal_code` | String | Full address |
+| `customer_status` | Enum | ACTIVE \| INACTIVE \| SUSPENDED |
+| `created_at`, `updated_at` | Timestamp | Audit trail |
 
 **Example:** Ravi Jayaraman | ravi.jayaraman@example.lk | Colombo | ACTIVE
 
 ---
 
-**Product** — Stores inventory items
+#### Product — Stores inventory items
 
-```
-product_id, sku (indexed, auto-generated), product_name, description
-category, sub_category, price (LKR), cost_price (LKR)
-stock_quantity (real-time), reorder_level, product_status
-brand, weight, created_at, updated_at
-```
+| Field | Type | Notes |
+|-------|------|-------|
+| `product_id` | Integer | Auto-generated primary key |
+| `sku` | String | Indexed, auto-generated (e.g., PROD-2026-001) |
+| `product_name` | String | Product title |
+| `description` | String | Product details |
+| `category`, `sub_category` | String | Taxonomy |
+| `price` | Decimal | Selling price in LKR |
+| `cost_price` | Decimal | Cost to business in LKR |
+| `stock_quantity` | Integer | Real-time inventory |
+| `reorder_level` | Integer | Low-stock alert threshold |
+| `product_status` | Enum | AVAILABLE \| OUT_OF_STOCK \| DISCONTINUED |
+| `brand`, `weight` | String | Product attributes |
+| `created_at`, `updated_at` | Timestamp | Audit trail |
 
 **Example:** Samsung 27" Monitor | PROD-2026-001 | 45,000 LKR | 42 units in stock
 
 ---
 
-**Location** — Stores store/warehouse locations
+#### Location — Stores store/warehouse locations
 
-```
-location_id, store_code (indexed), store_name, location_type
-address, city, state, country, postal_code
-phone, email, manager_name, opening_time, closing_time
-store_capacity, location_status (ACTIVE | INACTIVE | UNDER_RENOVATION)
-created_at, updated_at
-```
+| Field | Type | Notes |
+|-------|------|-------|
+| `location_id` | Integer | Auto-generated primary key |
+| `store_code` | String | Indexed unique code (e.g., COL-001) |
+| `store_name` | String | Location name |
+| `location_type` | Enum | RETAIL \| WAREHOUSE \| OUTLET \| ONLINE |
+| `address`, `city`, `state`, `country`, `postal_code` | String | Full address in Sri Lanka |
+| `phone`, `email` | String | Contact details |
+| `manager_name` | String | Store manager |
+| `opening_time`, `closing_time` | Time | Operating hours (e.g., 09:00-21:00) |
+| `store_capacity` | String | Capacity or square footage |
+| `location_status` | Enum | ACTIVE \| INACTIVE \| UNDER_RENOVATION |
+| `created_at`, `updated_at` | Timestamp | Audit trail |
 
 **Example:** Colombo Main Store | COL-001 | RETAIL | Manager: Keshan Perera | 09:00-21:00
 
 ---
 
-**Sales** — Records all transactions
+#### Sales — Records all transactions
 
-```
-sale_id, order_number (unique), customer_id, product_id, location_id
-quantity, unit_price (LKR), subtotal, discount_amount, tax_amount, total_amount
-payment_method (CASH | CREDIT_CARD | DEBIT_CARD | DIGITAL_WALLET)
-payment_status, order_status (COMPLETED | PROCESSING | CANCELLED | RETURNED)
-sale_date (indexed), delivery_date, notes, created_at, updated_at
-```
+| Field | Type | Notes |
+|-------|------|-------|
+| `sale_id` | Integer | Auto-generated primary key |
+| `order_number` | String | Unique order ID (e.g., ORD-2026-00001) |
+| `customer_id` | Integer | Foreign key to Customer |
+| `product_id` | Integer | Foreign key to Product |
+| `location_id` | Integer | Foreign key to Location |
+| `quantity` | Integer | Units sold |
+| `unit_price` | Decimal | Price per unit (LKR) |
+| `subtotal` | Decimal | quantity × unit_price |
+| `discount_amount` | Decimal | Discount (LKR) |
+| `tax_amount` | Decimal | Tax (LKR) |
+| `total_amount` | Decimal | Final amount paid (LKR) |
+| `payment_method` | Enum | CASH \| CREDIT_CARD \| DEBIT_CARD \| DIGITAL_WALLET |
+| `payment_status` | Enum | PAID \| PENDING \| REFUNDED \| FAILED |
+| `order_status` | Enum | COMPLETED \| PROCESSING \| CANCELLED \| RETURNED |
+| `sale_date` | DateTime | Indexed for date queries |
+| `delivery_date` | DateTime | Delivery timestamp |
+| `notes` | Text | Additional notes |
+| `created_at`, `updated_at` | Timestamp | Audit trail |
 
 **Example:** ORD-2026-00001 | Ravi Jayaraman | Samsung Monitor | 1 × 45,000 LKR | Total: 50,200 LKR | PAID
 
