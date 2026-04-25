@@ -94,6 +94,37 @@ Application URL:
 - H2 Console: http://localhost:8080/h2-console
 - API Base: http://localhost:8080/api
 
+## Previews
+
+### ER Diagram
+
+![ER Diagram](ER_DIAGRAM.png)
+
+### Dashboard Previews
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="Dashboard%20previews/Home.jpg" alt="Dashboard home preview" width="320"><br>
+      Home
+    </td>
+    <td align="center">
+      <img src="Dashboard%20previews/Product.jpg" alt="Product dashboard preview" width="320"><br>
+      Product
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="Dashboard%20previews/sales.jpg" alt="Sales dashboard preview" width="320"><br>
+      Sales
+    </td>
+    <td align="center">
+      <img src="Dashboard%20previews/Store.jpg" alt="Store dashboard preview" width="320"><br>
+      Store
+    </td>
+  </tr>
+</table>
+
 ## Project Layout
 
 ```text
